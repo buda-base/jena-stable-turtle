@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package org.apache.jena.riot.writer ;
+package io.bdrc.jena.sttl ;
 
 import static org.apache.jena.riot.writer.WriterConst.GAP_P_O ;
 import static org.apache.jena.riot.writer.WriterConst.GAP_S_P ;
@@ -111,6 +111,7 @@ public abstract class TurtleShell {
         private final Collection<Node>      graphNames ; 
         private final Node                  graphName ;
         private final Graph                 graph ;
+        private final CompareComplex compComplex;
         
         // Blank nodes that have one incoming triple
         private /*final*/ Set<Node>             nestedObjects ; 
@@ -160,6 +161,8 @@ public abstract class TurtleShell {
             // Stop head of lists printed as triples going all the way to the
             // good part.
             nestedObjects.removeAll(listElts) ;
+            
+            compComplex = new CompareComplex(compLiterals, propUriSortList, graph);
 
             //printDetails() ;
         }
@@ -662,17 +665,22 @@ public abstract class TurtleShell {
                 }
 
                 if ( ! rdfLiterals.isEmpty() ) {
-                    writePredicateObjectList(p, rdfLiterals, predicateMaxWidth, first) ;
+                    writePredicateObjectList(p, rdfLiterals, predicateMaxWidth, first, false) ;
+                    Collections.sort(rdfLiterals, compLiterals);
+                    System.out.println("literals: "+rdfLiterals.toString());
                     first = false ;
                 }
                 if ( ! rdfSimpleNodes.isEmpty() ) {
-                    writePredicateObjectList(p, rdfSimpleNodes, predicateMaxWidth, first) ;
+                    writePredicateObjectList(p, rdfSimpleNodes, predicateMaxWidth, first, false) ;
+                    Collections.sort(rdfSimpleNodes, compLiterals);
+                    System.out.println("simple: "+rdfSimpleNodes.toString());
                     first = false ;
                 }
 
-                for ( Node o : rdfComplexNodes ) {
-                    writePredicateObject(p, o, predicateMaxWidth, first) ;
-                    first = false ;
+                if ( ! rdfComplexNodes.isEmpty() ) {
+                    writePredicateObjectList(p, rdfComplexNodes, predicateMaxWidth, first, true) ;
+                    Collections.sort(rdfComplexNodes, compComplex);
+                    System.out.println("complex: "+rdfComplexNodes.toString());
                 }
             }
         }
@@ -684,7 +692,7 @@ public abstract class TurtleShell {
             out.decIndent(INDENT_OBJECT) ;
         }
 
-        private void writePredicateObjectList(Node p, List<Node> objects, int predicateMaxWidth, boolean first) {
+        private void writePredicateObjectList(Node p, List<Node> objects, int predicateMaxWidth, boolean first, boolean complex) {
             writePredicate(p, predicateMaxWidth, first) ;
             out.incIndent(INDENT_OBJECT) ;
             
@@ -696,13 +704,23 @@ public abstract class TurtleShell {
                         out.print(" , ") ;
                     else
                         // Before the current indent, due to a multiline literal being written raw.
-                        // We will pad spaces to indent on output spaces.  Don't add a first " " 
-                        out.print(", ") ;
+                        // We will pad spaces to indent on output spaces.  Don't add a first " "
+                        if (complex)
+                            out.print(",") ;
+                        else
+                            out.print(", ") ;
+                    if (complex) {
+                        println();
+                        out.pad(INDENT_OBJECT) ;
+                    }
                 }
                 else
                     firstObject = false ;
                 int row1 = out.getRow() ;
-                writeNode(o) ;
+                if (complex)
+                    writeNodePretty(o);
+                else
+                    writeNode(o) ;
                 int row2 = out.getRow();
                 lastObjectMultiLine = (row2 > row1) ;
             }
@@ -743,7 +761,7 @@ public abstract class TurtleShell {
                     x.put(p, new ArrayList<Node>()) ;
                 x.get(p).add(t.getObject()) ;
             }
-
+            
             return x ;
         }
 
@@ -922,43 +940,9 @@ public abstract class TurtleShell {
         }
     }
 
-    // Order of properties.
-    // rdf:type ("a")
-    // RDF and RDFS
-    // Other.
-    // Sorted by URI.
-
-    private static final class ComparePredicates implements Comparator<Node> {
-        private static int classification(Node p) {
-            if ( p.equals(RDF_type) )
-                return 0 ;
-
-            if ( p.getURI().startsWith(RDF.getURI()) || p.getURI().startsWith(RDFS.getURI()) )
-                return 1 ;
-
-            return 2 ;
-        }
-
-        @Override
-        public int compare(Node t1, Node t2) {
-            int class1 = classification(t1) ;
-            int class2 = classification(t2) ;
-            if ( class1 != class2 ) {
-                // Java 1.7
-                // return Integer.compare(class1, class2) ;
-                if ( class1 < class2 )
-                    return -1 ;
-                if ( class1 > class2 )
-                    return 1 ;
-                return 0 ;
-            }
-            String p1 = t1.getURI() ;
-            String p2 = t2.getURI() ;
-            return p1.compareTo(p2) ;
-        }
-    }
-
-    private static Comparator<Node> compPredicates = new ComparePredicates() ;
+    private static final Comparator<Node> compPredicates = new ComparePredicates() ;
+    private static final Comparator<Node> compLiterals = new CompareLiterals() ;
+    private static final List<String> propUriSortList = Arrays.asList(RDF.type.getURI(), RDFS.label.getURI());
 
     protected final void writeNode(Node node) {
         nodeFmt.format(out, node) ;
