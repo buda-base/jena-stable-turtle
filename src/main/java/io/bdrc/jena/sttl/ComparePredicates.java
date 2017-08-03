@@ -30,13 +30,7 @@ public class ComparePredicates implements Comparator<Node> {
         final int class1 = classification(t1) ;
         final int class2 = classification(t2) ;
         if ( class1 != class2 ) {
-            // Java 1.7
-            // return Integer.compare(class1, class2) ;
-            if ( class1 < class2 )
-                return -1 ;
-            if ( class1 > class2 )
-                return 1 ;
-            return 0 ;
+        	return Integer.compare(class1, class2) ;
         }
         final String p1 = t1.getURI() ;
         final String p2 = t2.getURI() ;
