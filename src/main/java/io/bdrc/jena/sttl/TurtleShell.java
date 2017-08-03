@@ -164,34 +164,8 @@ public abstract class TurtleShell {
             
             compComplex = new CompareComplex(compLiterals, propUriSortList, graph);
 
-            //printDetails() ;
         }
 
-        // Debug
-        private void printDetails() {
-            printDetails("nestedObjects", nestedObjects) ;
-            //printDetails("nestedObjectsWritten", nestedObjectsWritten) ;
-            printDetails("freeBnodes", freeBnodes) ;
-
-            printDetails("lists", lists) ;
-            printDetails("freeLists", freeLists) ;
-            printDetails("nLinkedLists", nLinkedLists) ;
-            printDetails("listElts", listElts) ;
-        }
-
-        private void printDetails(String label, Map<Node, List<Node>> map) {
-            System.err.print("## ") ;
-            System.err.print(label) ;
-            System.err.print(" = ") ;
-            System.err.println(map) ;
-        }
-
-        private void printDetails(String label, Collection<Node> nodes) {
-            System.err.print("## ") ;
-            System.err.print(label) ;
-            System.err.print(" = ") ;
-            System.err.println(nodes) ;
-        }
         // Debug
 
         private ShellGraph(Graph graph) {
@@ -214,17 +188,6 @@ public abstract class TurtleShell {
                 return RiotLib.triple1(graph, s, p, o) ;
         }
 
-        /** Get exactly one triple, or null for none or more than one. */
-        private Triple triple1(DatasetGraph dsg, Node s, Node p, Node o) {
-            Iterator<Quad> iter = dsg.find(Node.ANY, s, p, o) ;
-            if ( !iter.hasNext() )
-                return null ;
-            Quad q = iter.next() ;
-            if ( iter.hasNext() )
-                return null ;
-            return q.asTriple() ;
-        }
-
         private long countTriples(Node s, Node p, Node o) {
             if ( dsg != null )
                 return RiotLib.countTriples(dsg, s, p, o) ;
@@ -243,18 +206,6 @@ public abstract class TurtleShell {
                 return count012(iter) ;
             } else {
                 ExtendedIterator<Triple> iter = graph.find(Node.ANY, Node.ANY, obj) ;
-                try { return count012(iter) ; }
-                finally { iter.close() ; }
-            }
-        }
-
-        /** returns 0,1,2 (where 2 really means "more than 1") */
-        private int occursAsSubject(Node subj) {
-            if ( dsg != null ) {
-                Iterator<Quad> iter = dsg.find(Node.ANY, subj, Node.ANY, Node.ANY) ;
-                return count012(iter) ;
-            } else {
-                ExtendedIterator<Triple> iter = graph.find(subj, Node.ANY, Node.ANY) ;
                 try { return count012(iter) ; }
                 finally { iter.close() ; }
             }
@@ -569,13 +520,6 @@ public abstract class TurtleShell {
             return somethingWritten ;
         }
 
-        // Write triples, flat and simply.
-        // Reset the state variables so "isPretty" return false. 
-        private void writeTriples(Node subj, Iterator<Triple> iter) {
-            allowDeepPretty = false;
-            writeCluster(subj, Iter.toList(iter));
-        }
-
         // return true if did write something.
         private boolean writeBySubject(Iterator<Node> subjects) {
             boolean first = true ;
@@ -695,8 +639,7 @@ public abstract class TurtleShell {
         private void writePredicateObjectList(Node p, List<Node> objects, int predicateMaxWidth, boolean first, boolean complex) {
             writePredicate(p, predicateMaxWidth, first) ;
             out.incIndent(INDENT_OBJECT) ;
-            
-            boolean lastObjectMultiLine = false ;
+
             boolean firstObject = true ;
             for ( Node o : objects ) {
                 if ( !firstObject ) {
@@ -716,13 +659,10 @@ public abstract class TurtleShell {
                 }
                 else
                     firstObject = false ;
-                int row1 = out.getRow() ;
                 if (complex)
                     writeNodePretty(o);
                 else
                     writeNode(o) ;
-                int row2 = out.getRow();
-                lastObjectMultiLine = (row2 > row1) ;
             }
             out.decIndent(INDENT_OBJECT) ;
         }
@@ -776,15 +716,8 @@ public abstract class TurtleShell {
 
         // [ :p "abc" ] .  or    [] : "abc" .
         private void writeNestedObjectTopLevel(Node subject) {
-            if ( true ) {
-                writeNestedObject(subject) ;
-                out.println(" .") ;
-            } else {
-                // Alternative.
-                Collection<Triple> cluster = triplesOfSubject(subject) ;
-                print("[]") ;
-                writeClusterPredicateObjectList(0, cluster) ;
-            }
+            writeNestedObject(subject) ;
+            out.println(" .") ;
         }
         
         private void writeNestedObject(Node node) {
@@ -814,12 +747,8 @@ public abstract class TurtleShell {
             out.incIndent(2) ;
             writePredicateObjectList(x) ;
             out.decIndent(2) ;
-            if ( true ) {
-                println() ; // Newline for "]"
-                print("]") ;
-            } else { // Compact
-                print(" ]") ;
-            }
+            println() ; // Newline for "]"
+            print("]") ;
             out.setAbsoluteIndent(indent0) ;
         }
 
@@ -829,71 +758,60 @@ public abstract class TurtleShell {
                 out.print("()") ;
                 return ;
             }
-            
-            if ( false ) {
-                out.print("(") ;
-                for ( Node n : elts ) {
-                    out.print(" ") ;
-                    writeNodePretty(n) ;
-                }
-                out.print(" )") ;
-            } 
 
-            if ( true ) {
-                // "fresh line mode" means printed one on new line 
-                // Multi line items are ones that can be multiple lines. Non-literals.
-                // Was the previous row a multiLine? 
-                boolean lastItemFreshLine = false ;
-                // Have there been any items that causes "fresh line" mode? 
-                boolean multiLineAny = false ;
-                boolean first = true ;
+            // "fresh line mode" means printed one on new line 
+            // Multi line items are ones that can be multiple lines. Non-literals.
+            // Was the previous row a multiLine? 
+            boolean lastItemFreshLine = false ;
+            // Have there been any items that causes "fresh line" mode? 
+            boolean multiLineAny = false ;
+            boolean first = true ;
 
-                // Where we started.
-                int originalIndent = out.getAbsoluteIndent() ;
-                // Rebase indent here.
-                int x = out.getCol() ;
-                out.setAbsoluteIndent(x);
+            // Where we started.
+            int originalIndent = out.getAbsoluteIndent() ;
+            // Rebase indent here.
+            int x = out.getCol() ;
+            out.setAbsoluteIndent(x);
 
-                out.print("(") ;
-                out.incIndent(2); 
-                for ( Node n : elts ) {
-                    
-                    // Print this item on a fresh line? (still to check: first line)
-                    boolean thisItemFreshLine = /* multiLineAny | */ n.isBlank() ;
-
-                    // Special case List in List.
-                    // Start on this line if last item was on this line.
-                    if ( lists.containsKey(n) )
-                        thisItemFreshLine = lastItemFreshLine ;
+            out.print("(") ;
+            out.incIndent(2); 
+            for ( Node n : elts ) {
                 
-                    // Starting point.
-                    if ( ! first ) {
-                        if ( lastItemFreshLine | thisItemFreshLine )
-                            out.println() ;
-                        else 
-                            out.print(" ") ;
-                    }
+                // Print this item on a fresh line? (still to check: first line)
+                boolean thisItemFreshLine = /* multiLineAny | */ n.isBlank() ;
 
-                    first = false ;
-                    //Literals with newlines: int x1 = out.getRow() ;
-                    // Adds INDENT_OBJECT even for a [ one triple ]
-                    // Special case [ one triple ]??
-                    writeNodePretty(n) ;
-                    //Literals with newlines:int x2 = out.getRow() ;
-                    //Literals with newlines: boolean multiLineAnyway = ( x1 != x2 ) ; 
-                    lastItemFreshLine = thisItemFreshLine ;
-                    multiLineAny  = multiLineAny | thisItemFreshLine ;
-                    
+                // Special case List in List.
+                // Start on this line if last item was on this line.
+                if ( lists.containsKey(n) )
+                    thisItemFreshLine = lastItemFreshLine ;
+            
+                // Starting point.
+                if ( ! first ) {
+                    if ( lastItemFreshLine | thisItemFreshLine )
+                        out.println() ;
+                    else 
+                        out.print(" ") ;
                 }
-                if ( multiLineAny )
-                    out.println() ;
-                else 
-                    out.print(" ") ;
-                out.decIndent(2);
-                out.setAbsoluteIndent(x);
-                out.print(")") ;
-                out.setAbsoluteIndent(originalIndent) ;
+
+                first = false ;
+                //Literals with newlines: int x1 = out.getRow() ;
+                // Adds INDENT_OBJECT even for a [ one triple ]
+                // Special case [ one triple ]??
+                writeNodePretty(n) ;
+                //Literals with newlines:int x2 = out.getRow() ;
+                //Literals with newlines: boolean multiLineAnyway = ( x1 != x2 ) ; 
+                lastItemFreshLine = thisItemFreshLine ;
+                multiLineAny  = multiLineAny | thisItemFreshLine ;
+                
             }
+            if ( multiLineAny )
+                out.println() ;
+            else 
+                out.print(" ") ;
+            out.decIndent(2);
+            out.setAbsoluteIndent(x);
+            out.print(")") ;
+            out.setAbsoluteIndent(originalIndent) ;
         }
 
         private boolean isPrettyNode(Node n) {
@@ -925,12 +843,6 @@ public abstract class TurtleShell {
                 nestedObjectsWritten.add(obj) ;
 
         }
-
-        // Order of properties.
-        // rdf:type ("a")
-        // RDF and RDFS
-        // Other.
-        // Sorted by URI.
         
         private void write_S_P_Gap() {
             if ( out.getCol() > LONG_SUBJECT )
