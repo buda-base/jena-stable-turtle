@@ -72,9 +72,12 @@ public class TestSttl {
 		List<Node> list = Arrays.asList(
             NodeFactory.createLiteral("def", "aa", RDF.dtLangString),
             NodeFactory.createLiteral("abc", "en", RDF.dtLangString),
+            NodeFactory.createLiteral("def", "en", RDF.dtLangString),
             NodeFactory.createLiteral("abc", XSDDatatype.XSDstring),
             NodeFactory.createLiteral("def", XSDDatatype.XSDstring),
             NodeFactory.createLiteral("+1", XSDDatatype.XSDinteger),
+            NodeFactory.createLiteral("+1", XSDDatatype.XSDnonNegativeInteger),
+            NodeFactory.createLiteral("1", XSDDatatype.XSDinteger),
             NodeFactory.createLiteral("002", XSDDatatype.XSDinteger),
             NodeFactory.createLiteral("1.2", XSDDatatype.XSDfloat),
             NodeFactory.createLiteral("2017-08-04T15:48:17+02:00", XSDDatatype.XSDdateTime), // timestamp 1501854497
@@ -87,9 +90,12 @@ public class TestSttl {
 		assertThat(list, contains(
             NodeFactory.createLiteral("def", "aa", RDF.dtLangString),
             NodeFactory.createLiteral("abc", "en", RDF.dtLangString),
+            NodeFactory.createLiteral("def", "en", RDF.dtLangString),
             NodeFactory.createLiteral("abc", XSDDatatype.XSDstring),
             NodeFactory.createLiteral("def", XSDDatatype.XSDstring),
             NodeFactory.createLiteral("+1", XSDDatatype.XSDinteger),
+            NodeFactory.createLiteral("1", XSDDatatype.XSDinteger),
+            NodeFactory.createLiteral("+1", XSDDatatype.XSDnonNegativeInteger),
             NodeFactory.createLiteral("1.2", XSDDatatype.XSDfloat),
             NodeFactory.createLiteral("002", XSDDatatype.XSDinteger),
             NodeFactory.createLiteral("http://example.com", XSDDatatype.XSDanyURI),

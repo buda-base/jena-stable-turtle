@@ -4,6 +4,14 @@ This repository contains code to define a new [RDF Writer](https://jena.apache.o
 
 ### Changes from the stock turtle output
 
+### Sorting some particular cases
+
+There is always some arbitrary decisions to be taken for some cases. We took the following when sorting objects:
+- first URIs (sorted) then literals (sorted) then blank nodes
+- first `rdf:langString`s then `xsd:string`s then numbers then everything else, sorted by type uri then value
+- `rdf:langString`s are sorted by lang then value, in the root unicode collator (not in the locale corresponding to the language)
+- numbers are sorted first by value then by type uri (`"+1"^^xsd:integer` < `"1"^^xsd:integer` < `"+1"^^xsd:nonNegativeInteger` < `"1.2"^^xsd:float` < `"2"^^xsd:integer`)
+
 ## Installation
 
 TODO

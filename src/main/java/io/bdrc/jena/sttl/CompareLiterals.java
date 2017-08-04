@@ -12,9 +12,8 @@ public final class CompareLiterals implements Comparator<Node> {
     
     public static Collator collator = Collator.getInstance(); // root locale
     
-    public static int compareStrings(final String s0, final String s1, final String lang) {
-        // maybe we want to use the locale corresponding to the lang, maybe not
-        return collator.compare(s0, s1);
+    public static int compareStrings(final String s1, final String s2, final String lang) {
+        return collator.compare(s1, s2);
     }
     
     public static Integer compareUri(final Node t1, final Node t2) {
@@ -53,7 +52,7 @@ public final class CompareLiterals implements Comparator<Node> {
         if (!lang1.isEmpty()) {
             res = lang1.compareTo(lang2);
             if (res != 0) return res;
-            return compareStrings(t1.getLiteralLexicalForm(), t1.getLiteralLexicalForm(), lang1);
+            return compareStrings(t1.getLiteralLexicalForm(), t2.getLiteralLexicalForm(), lang1);
         } else if (!lang2.isEmpty()) {
             return 1;
         }
@@ -69,16 +68,16 @@ public final class CompareLiterals implements Comparator<Node> {
         	return 1;
 
         if (Util.comparable(t1, t2)) {
-            return Util.compareTypedLiterals(t1, t2);                
+        	res = Util.compareTypedLiterals(t1, t2);
+            if (res != 0) return res;
         }
         
         final Object o1 = t1.getLiteralValue();
         final Object o2 = t2.getLiteralValue();
-        // non-comparable, so not both number nor both dates
-        // numbers grouped first
-        if (o1 instanceof Number)
+        // group numbers
+        if (o1 instanceof Number && !(o2 instanceof Number))
         	return -1;
-        if (o2 instanceof Number)
+        if (o2 instanceof Number && !(o1 instanceof Number))
         	return 1;
         
         res = t1t.getURI().compareTo(t2t.getURI());
