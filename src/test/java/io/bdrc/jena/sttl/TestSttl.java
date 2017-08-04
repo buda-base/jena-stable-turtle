@@ -3,6 +3,11 @@ package io.bdrc.jena.sttl;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.rdf.model.AnonId;
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.apache.jena.vocabulary.SKOS;
@@ -104,6 +109,25 @@ public class TestSttl {
             NodeFactory.createLiteral("2017-08-04T15:48:17+02:00", XSDDatatype.XSDdateTime),
             NodeFactory.createLiteral("2017-08-04T13:48:31Z", XSDDatatype.XSDdateTime)
 		));
+	}
+	
+	@Test
+	public void testBlanks() {
+		Model m = ModelFactory.createDefaultModel();
+		Resource t1 = m.createResource("http://example.com/type1");
+		Resource t2 = m.createResource("http://example.com/type2");
+		Literal l1 = m.createLiteral("abc");
+		Literal l2 = m.createLiteral("def");
+		Resource r0 = m.createResource(new AnonId("r0")).addProperty(RDF.type, t1);
+		Resource r1 = m.createResource(new AnonId("r1")).addProperty(RDF.type, t2);
+		Resource r2 = m.createResource(new AnonId("r2")).addProperty(RDF.type, t1).addProperty(RDFS.label, l1);
+		Resource r3 = m.createResource(new AnonId("r3")).addProperty(RDF.type, t1).addProperty(RDFS.label, l2);
+		Resource r4 = m.createResource(new AnonId("r4")).addProperty(RDFS.label, l1);
+		Resource r5 = m.createResource(new AnonId("r5")).addProperty(RDFS.label, l2);
+		// sort by type
+		List<Node> list = Arrays.asList(r0.asNode(), r1.asNode(), r2.asNode(), r3.asNode(), r4.asNode(), r5.asNode());
+		Collections.sort(list, new CompareComplex(m.getGraph()));
+		assertThat(list, contains(r2.asNode(), r3.asNode(), r0.asNode(), r1.asNode(), r4.asNode(), r5.asNode()));
 	}
 	
 }
