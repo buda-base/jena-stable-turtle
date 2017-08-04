@@ -14,7 +14,6 @@ public class CompareComplex implements Comparator<Node> {
     public Comparator<Node> compLiteral = null;
     public List<String> propUris = null;
     public Graph g = null;
-    // create a property: ResourceFactory.createProperty(uri)
     
     public CompareComplex(final Comparator<Node> compLiteral, final List<String> propUris, final Graph g) {
         super();
