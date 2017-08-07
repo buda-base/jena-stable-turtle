@@ -25,6 +25,7 @@ import static org.apache.jena.riot.writer.WriterConst.LONG_PREDICATE ;
 import static org.apache.jena.riot.writer.WriterConst.LONG_SUBJECT ;
 import static org.apache.jena.riot.writer.WriterConst.MIN_PREDICATE ;
 import static org.apache.jena.riot.writer.WriterConst.OBJECT_LISTS ;
+import static org.apache.jena.riot.writer.WriterConst.PREFIX_IRI;
 import static org.apache.jena.riot.writer.WriterConst.RDF_First ;
 import static org.apache.jena.riot.writer.WriterConst.RDF_Nil ;
 import static org.apache.jena.riot.writer.WriterConst.RDF_Rest ;
@@ -106,7 +107,23 @@ public class TurtleShell {
     }
 
     protected void writePrefixes(PrefixMap prefixMap) {
-        RiotLib.writePrefixes(out, prefixMap) ;
+    	// had to rewrite that to order it properly:
+    	if ( prefixMap == null || prefixMap.isEmpty() )
+    		return;
+    	final Map<String,String> map = prefixMap.getMappingCopyStr();
+    	final List<String> sortedKeys = new ArrayList<String>(map.keySet());
+    	Collections.sort(sortedKeys);
+        for ( String prefix : sortedKeys ) {
+            out.print("@prefix ");
+            out.print(prefix);
+            out.print(": ");
+            out.pad(PREFIX_IRI);
+            out.print("<");
+            out.print(map.get(prefix));
+            out.print(">");
+            out.print(" .");
+            out.println();
+        }
     }
 
     /** Write graph in Turtle syntax (or part of TriG) */
