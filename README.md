@@ -14,13 +14,45 @@ There is always some arbitrary decisions to be taken for some cases. We took the
 
 ## Installation
 
-TODO
+Using maven:
+
+```xml
+    <dependency>
+      <groupId>io.bdrc-</groupId>
+      <artifactId>jena-stable-turtle</artifactId>
+      <version>0.1.0</version>
+    </dependency>
+```
 
 ## Use
 
-TODO
+```java
+// register the STTL writer
+Lang sttl = STTLWriter.registerWriter();
+// build a map of namespace priorities
+SortedMap<String, Integer> nsPrio = ComparePredicates.getDefaultNSPriorities();
+nsPrio.put(SKOS.getURI(), 1);
+nsPrio.put("http://purl.bdrc.io/ontology/admin/", 5);
+nsPrio.put("http://purl.bdrc.io/ontology/toberemoved/", 6);
+// build a list of predicates URIs to be used (in order) for blank node comparison
+List<String> predicatesPrio = CompareComplex.getDefaultPropUris();
+predicatesPrio.add("http://purl.bdrc.io/ontology/admin/logWhen");
+predicatesPrio.add("http://purl.bdrc.io/ontology/onOrAbout");
+predicatesPrio.add("http://purl.bdrc.io/ontology/noteText");
+// pass the values through a Context object
+Context ctx = new Context();
+ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "nsPriorities"), nsPrio);
+ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "nsDefaultPriority"), 2);
+ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "complexPredicatesPriorities"), predicatesPrio);
+Graph g = ... ; // fetch the graph you want to write
+RDFWriter w = RDFWriter.create().source().context(ctx).lang(sttl).build();
+w.output( ... ); // write somewhere
+
+```
 
 ## Change log
+
+See [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 
