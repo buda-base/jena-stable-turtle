@@ -62,7 +62,7 @@ import org.apache.jena.vocabulary.RDFS ;
 /**
  * Base class to support the pretty forms of Turtle-related languages (Turtle, TriG)
  */
-public abstract class TurtleShell {
+public class TurtleShell {
     protected final IndentedWriter out ;
     protected final NodeFormatter  nodeFmt ;
     protected final PrefixMap      prefixMap ;
@@ -101,6 +101,15 @@ public abstract class TurtleShell {
             : dsg.getGraph(graphName) ; 
         ShellGraph x = new ShellGraph(g, graphName, dsg) ;
         x.writeGraph() ;
+    }
+    
+    // write comes from TurtleWriter.java
+    public void write(Graph graph) {
+        writeBase(baseURI);
+        writePrefixes(prefixMap) ;
+        if ( !prefixMap.isEmpty() && !graph.isEmpty() )
+            out.println();
+        writeGraphTTL(graph);
     }
 
     // Write one graph - using an inner object class to isolate

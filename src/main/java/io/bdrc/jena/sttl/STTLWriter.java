@@ -15,13 +15,18 @@ public class STTLWriter extends TurtleWriterBase {
 
     public static Lang lang = null;
     
-    public static void registerWriter() {
-        if (lang != null) return;
-        lang = LangBuilder.create("STTL", "stupid-content").build();
+    public static Lang registerWriter() {
+    	return registerWriter("STTL", "stupid-content");
+    }
+    
+    public static Lang registerWriter(String langName, String mimeType) {
+        if (lang != null) return lang;
+        lang = LangBuilder.create(langName, mimeType).build();
         RDFLanguages.register(lang);
         RDFFormat format = new RDFFormat(lang);
         RDFWriterRegistry.register(lang, format);
-        RDFWriterRegistry.register(format, new STTLWriterFactory()) ;
+        RDFWriterRegistry.register(format, new STTLWriterFactory());
+        return lang;
     }
     
     @Override
@@ -31,7 +36,7 @@ public class STTLWriter extends TurtleWriterBase {
 
     @Override
     protected void output(IndentedWriter iOut, Graph graph, PrefixMap prefixMap, String baseURI, Context context) {
-        SortedTurtleShell w = new SortedTurtleShell(iOut, prefixMap, baseURI, context) ;
+        TurtleShell w = new TurtleShell(iOut, prefixMap, baseURI, context) ;
         w.write(graph) ;
     }
 
