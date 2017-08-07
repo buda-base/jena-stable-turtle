@@ -62,7 +62,7 @@ public final class CompareLiterals implements Comparator<Node> {
         if (t1t == XSDDatatype.XSDstring) {
         	if (t2t != XSDDatatype.XSDstring)
         		return -1;
-        	return compareStrings(t1.getLiteralLexicalForm(), t1.getLiteralLexicalForm(), null);
+        	return compareStrings(t1.getLiteralLexicalForm(), t2.getLiteralLexicalForm(), null);
         }
         if (t2t == XSDDatatype.XSDstring)
         	return 1;

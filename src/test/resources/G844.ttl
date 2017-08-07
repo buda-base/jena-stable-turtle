@@ -1,23 +1,24 @@
-@prefix bdr:   <http://purl.bdrc.io/resource/> .
-@prefix bdd:   <http://purl.bdrc.io/data/> .
-@prefix tbr:   <http://purl.bdrc.io/ontology/toberemoved/> .
-@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix owl:   <http://www.w3.org/2002/07/owl#> .
-@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
-@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
-@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix adm:   <http://purl.bdrc.io/ontology/admin/> .
-@prefix vcard: <http://www.w3.org/2006/vcard/ns#> .
+@prefix bdd:   <http://purl.bdrc.io/data/> .
 @prefix bdo:   <http://purl.bdrc.io/ontology/> .
+@prefix bdr:   <http://purl.bdrc.io/resource/> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+@prefix tbr:   <http://purl.bdrc.io/ontology/toberemoved/> .
+@prefix vcard: <http://www.w3.org/2006/vcard/ns#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
 
 bdr:G844  a                       bdo:Place ;
     skos:altLabel                 "འདི་ཕྱག་བཏབ་པའི་དུས་ཚོད་ལ་ལས་༡༡༥༠ལོ་བྲིས་པ་མངོན་མོད། དེ་དུས་ཕྱག་འདེབས་པ།"@bo , "bya pa khri dpon gyi mnga' khongs"@bo-latn-x-ewts ;
     skos:prefLabel                "bya yul"@bo-latn-x-ewts ;
-    bdo:note                      [ bdo:noteLocationStatement  "p.1467-1468" ;
-                                    bdo:noteText               "བྱ་པ་ཁྲི་དཔོན་དང་འབྲེལ་བའི་ཆོས་རྒྱལ་བྱ་པའི་ལོ་རྒྱུས་དཔྱིད་ཀྱི་རྒྱལ་མོའི་གླུ་དབྱངས་ཀྱི་ནང་དོན་དང་འབྲེལ་ནས་བཀོད་པ་གསལ།"@en ;
-                                    bdo:noteWork               bdr:W26372
-                                  ] , 
-            [ bdo:noteText  "the region of the rulers of the bya principality in southern tibet"@en ] ;
+    bdo:note                      [ bdo:noteText
+              "the region of the rulers of the bya principality in southern tibet"@en ] , 
+            [ bdo:noteLocationStatement  "p.1467-1468" ;
+              bdo:noteText               "བྱ་པ་ཁྲི་དཔོན་དང་འབྲེལ་བའི་ཆོས་རྒྱལ་བྱ་པའི་ལོ་རྒྱུས་དཔྱིད་ཀྱི་རྒྱལ་མོའི་གླུ་དབྱངས་ཀྱི་ནང་དོན་དང་འབྲེལ་ནས་བཀོད་པ་གསལ།"@en ;
+              bdo:noteWork               bdr:W26372
+            ] ;
     bdo:placeChgisId              "854" ;
     bdo:placeContains             bdr:G1183 , bdr:G229 , bdr:G2CN10883 , bdr:G3478 , bdr:G3JT12502 , bdr:G4885 ;
     bdo:placeEvent                [ a                          bdo:PlaceFounded ;

@@ -144,7 +144,6 @@ public class TestSttl {
 	@Test
 	public void testGeneral() throws IOException {
 		Model m = ModelFactory.createDefaultModel();
-		//read("src/test/resources/G844.ttl", "TURTLE");
 		String content = new String(Files.readAllBytes(Paths.get("src/test/resources/G844.ttl"))).trim();
 		m.read("src/test/resources/G844.ttl", "TURTLE");
 		m.setNsPrefix("bdo", "http://purl.bdrc.io/ontology/");
@@ -165,9 +164,8 @@ public class TestSttl {
 		RDFWriter w = RDFWriter.create().source(m.getGraph()).context(ctx).lang(sttl).build();
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		w.output(baos);
-		w.output("/tmp/toto");
 		String res = baos.toString().trim();
-		System.out.println(res);
+		//System.out.println(res);
 		assertTrue(res.equals(content));
 	}
 	
