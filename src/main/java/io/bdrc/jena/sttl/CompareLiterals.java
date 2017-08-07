@@ -106,6 +106,8 @@ public final class CompareLiterals implements Comparator<Node> {
     	// then others sorted by type then contentS
         Integer res = compareUri(t1, t2);
         if (res != null) return res;
+        if (t1.isBlank() && t2.isBlank())
+        	return t1.getBlankNodeLabel().compareTo(t2.getBlankNodeLabel());
         final String lang1 = t1.getLiteralLanguage();
         final String lang2 = t2.getLiteralLanguage();
         if (!lang1.isEmpty()) {

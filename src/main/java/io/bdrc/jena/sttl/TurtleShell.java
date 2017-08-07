@@ -329,8 +329,12 @@ public class TurtleShell {
             return RiotLib.triplesOfSubject(graph, subj) ;
         }
 
-        private Iterator<Node> listSubjects() {
-            return GLib.listSubjects(graph) ;
+        private List<Node> listSubjects() {
+        	// reimplement in a sorted way:
+        	ExtendedIterator<Triple> iter = graph.find(Node.ANY, Node.ANY, Node.ANY) ;
+        	List<Node> ln = Iter.iter(iter).map(Triple::getSubject).distinct().toList() ;
+        	Collections.sort(ln, compLiterals);
+        	return ln;
         }
 
         // ---- Data access
@@ -470,7 +474,7 @@ public class TurtleShell {
         // ----
 
         private void writeGraph() {
-            Iterator<Node> subjects = listSubjects() ;
+            List<Node> subjects = listSubjects() ;
             boolean somethingWritten = writeBySubject(subjects) ;
             // Write remainders
             // 1 - Shared lists
@@ -571,10 +575,9 @@ public class TurtleShell {
         }
 
         // return true if did write something.
-        private boolean writeBySubject(Iterator<Node> subjects) {
+        private boolean writeBySubject(List<Node> subjects) {
             boolean first = true ;
-            for ( ; subjects.hasNext() ; ) {
-                Node subj = subjects.next() ;
+            for ( Node subj : subjects ) {
                 if ( nestedObjects.contains(subj) )
                     continue ;
                 if ( listElts.contains(subj) )

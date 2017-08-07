@@ -142,9 +142,6 @@ public class TestSttl {
 	@Test
 	public void testGeneral() throws IOException {
 		Model m = ModelFactory.createDefaultModel();
-		String content = new String(Files.readAllBytes(Paths.get("src/test/resources/G844.ttl"))).trim();
-		m.read("src/test/resources/G844.ttl", "TURTLE");
-		m.setNsPrefix("bdo", "http://purl.bdrc.io/ontology/");
 		Lang sttl = STTLWriter.registerWriter();
 		SortedMap<String, Integer> nsPrio = ComparePredicates.getDefaultNSPriorities();
 		nsPrio.put(SKOS.getURI(), 1);
@@ -159,11 +156,22 @@ public class TestSttl {
 		ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "nsDefaultPriority"), 2);
 		ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "complexPredicatesPriorities"), predicatesPrio);
 		ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "indentBase"), 4);
+		// G844
+		String content = new String(Files.readAllBytes(Paths.get("src/test/resources/G844.ttl"))).trim();
+		m.read("src/test/resources/G844.ttl", "TURTLE");
 		RDFWriter w = RDFWriter.create().source(m.getGraph()).context(ctx).lang(sttl).build();
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		w.output(baos);
 		String res = baos.toString().trim();
-		//System.out.println(res);
+		assertTrue(res.equals(content));
+		// outline
+		content = new String(Files.readAllBytes(Paths.get("src/test/resources/outline.ttl"))).trim();
+		m = ModelFactory.createDefaultModel();
+		m.read("src/test/resources/outline.ttl", "TURTLE");
+		w = RDFWriter.create().source(m.getGraph()).context(ctx).lang(sttl).build();
+		baos = new ByteArrayOutputStream();
+		w.output(baos);
+		res = baos.toString().trim();
 		assertTrue(res.equals(content));
 	}
 	
