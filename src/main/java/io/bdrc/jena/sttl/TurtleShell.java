@@ -21,8 +21,6 @@ package io.bdrc.jena.sttl ;
 
 import static org.apache.jena.riot.writer.WriterConst.GAP_P_O ;
 import static org.apache.jena.riot.writer.WriterConst.GAP_S_P ;
-import static org.apache.jena.riot.writer.WriterConst.INDENT_OBJECT ;
-import static org.apache.jena.riot.writer.WriterConst.INDENT_PREDICATE ;
 import static org.apache.jena.riot.writer.WriterConst.LONG_PREDICATE ;
 import static org.apache.jena.riot.writer.WriterConst.LONG_SUBJECT ;
 import static org.apache.jena.riot.writer.WriterConst.MIN_PREDICATE ;
@@ -55,9 +53,8 @@ import org.apache.jena.riot.system.RiotLib ;
 import org.apache.jena.sparql.core.DatasetGraph ;
 import org.apache.jena.sparql.core.Quad ;
 import org.apache.jena.sparql.util.Context ;
+import org.apache.jena.sparql.util.Symbol;
 import org.apache.jena.util.iterator.ExtendedIterator ;
-import org.apache.jena.vocabulary.RDF ;
-import org.apache.jena.vocabulary.RDFS ;
 
 /**
  * Base class to support the pretty forms of Turtle-related languages (Turtle, TriG)
@@ -67,6 +64,12 @@ public class TurtleShell {
     protected final NodeFormatter  nodeFmt ;
     protected final PrefixMap      prefixMap ;
     protected final String         baseURI ;
+    
+    protected int indent_base = 4;
+    
+    private Comparator<Node>              compPredicates ;
+    private static final Comparator<Node> compLiterals = new CompareLiterals() ;
+    private List<String>                  complexPredicatesPriorities = null ;
 
     protected TurtleShell(IndentedWriter out, PrefixMap pmap, String baseURI, Context context) {
         this.out = out ;
@@ -74,10 +77,28 @@ public class TurtleShell {
             pmap = PrefixMapFactory.emptyPrefixMap() ;
         this.prefixMap = pmap ;
         this.baseURI = baseURI ;
-        if ( context != null && context.isTrue(RIOT.multilineLiterals) )
-            this.nodeFmt = new NodeFormatterTTL_MultiLine(baseURI, pmap, NodeToLabel.createScopeByDocument()) ;    
+        if ( context != null && context.isTrue(RIOT.multilineLiterals))
+    		this.nodeFmt = new NodeFormatterTTL_MultiLine(baseURI, pmap, NodeToLabel.createScopeByDocument()) ;
         else
-            this.nodeFmt = new NodeFormatterTTL(baseURI, pmap, NodeToLabel.createScopeByDocument()) ;
+        	this.nodeFmt = new NodeFormatterTTL(baseURI, pmap, NodeToLabel.createScopeByDocument()) ;
+        Symbol s = Symbol.create(STTLWriter.SYMBOLS_NS + "nsPriorities");
+        if (context != null && context.isDefined(s)) {
+        	SortedMap<String, Integer> nsPriorities = context.get(s);
+        	Integer nsDefaultPriority = context.get(Symbol.create(STTLWriter.SYMBOLS_NS + "nsDefaultPriority"));
+        	if (nsDefaultPriority == null || nsPriorities == null)
+        		this.compPredicates = new ComparePredicates();
+    		else
+    			this.compPredicates = new ComparePredicates(nsPriorities, nsDefaultPriority);
+        } else
+        	this.compPredicates = new ComparePredicates();
+        
+        s = Symbol.create(STTLWriter.SYMBOLS_NS + "complexPredicatesPriorities");
+        if (context != null && context.isDefined(s))
+        	this.complexPredicatesPriorities = context.get(s);
+        
+        s = Symbol.create(STTLWriter.SYMBOLS_NS + "indentBase");
+        if (context != null && context.isDefined(s))
+        	this.indent_base = context.get(s);
     }
 
     protected void writeBase(String base) {
@@ -120,10 +141,11 @@ public class TurtleShell {
         private final Collection<Node>      graphNames ; 
         private final Node                  graphName ;
         private final Graph                 graph ;
-        private final CompareComplex compComplex;
+        private CompareComplex              compComplex;
+
         
         // Blank nodes that have one incoming triple
-        private /*final*/ Set<Node>             nestedObjects ; 
+        private /*final*/ Set<Node>         nestedObjects ; 
         private final Set<Node>             nestedObjectsWritten ;
 
         // Blank node subjects that are not referenced as objects or graph names
@@ -171,8 +193,10 @@ public class TurtleShell {
             // good part.
             nestedObjects.removeAll(listElts) ;
             
-            compComplex = new CompareComplex(compLiterals, propUriSortList, graph);
-
+            if (complexPredicatesPriorities != null)
+            	this.compComplex = new CompareComplex(compLiterals, complexPredicatesPriorities, graph);
+            else
+            	this.compComplex = new CompareComplex(graph);
         }
 
         // Debug
@@ -471,7 +495,7 @@ public class TurtleShell {
                 x = x.subList(1, x.size()) ;
                 writeList(x) ;
                 print(" .") ;
-                out.decIndent(INDENT_PREDICATE) ;
+                out.decIndent(indent_base) ;
                 println() ;
             }
             return somethingWritten ;
@@ -558,7 +582,7 @@ public class TurtleShell {
             if ( cluster.isEmpty() )
                 return ;
             writeNode(subject) ;
-            writeClusterPredicateObjectList(INDENT_PREDICATE, cluster) ;
+            writeClusterPredicateObjectList(indent_base, cluster) ;
         }
 
         // Write the PredicateObjectList fora subject already output.
@@ -598,18 +622,11 @@ public class TurtleShell {
             }
 
             for ( Node p : predicates ) {
-                // Literals in the group
-                List<Node> rdfLiterals = new ArrayList<>() ; 
-                // Non-literals, printed
                 List<Node> rdfSimpleNodes = new ArrayList<>() ; 
                 // Non-literals, printed (), or []-embedded
                 List<Node> rdfComplexNodes = new ArrayList<>() ; 
 
                 for ( Node o : pGroups.get(p) ) {
-                    if ( o.isLiteral() ) {
-                        rdfLiterals.add(o) ;
-                        continue ;
-                    }
                     if ( isPrettyNode(o) ) {
                         rdfComplexNodes.add(o) ;
                         continue ;
@@ -617,37 +634,29 @@ public class TurtleShell {
                     rdfSimpleNodes.add(o) ;
                 }
 
-                if ( ! rdfLiterals.isEmpty() ) {
-                    writePredicateObjectList(p, rdfLiterals, predicateMaxWidth, first, false) ;
-                    Collections.sort(rdfLiterals, compLiterals);
-                    System.out.println("literals: "+rdfLiterals.toString());
-                    first = false ;
-                }
                 if ( ! rdfSimpleNodes.isEmpty() ) {
-                    writePredicateObjectList(p, rdfSimpleNodes, predicateMaxWidth, first, false) ;
                     Collections.sort(rdfSimpleNodes, compLiterals);
-                    System.out.println("simple: "+rdfSimpleNodes.toString());
+                    writePredicateObjectList(p, rdfSimpleNodes, predicateMaxWidth, first, false) ;
                     first = false ;
                 }
 
                 if ( ! rdfComplexNodes.isEmpty() ) {
-                    writePredicateObjectList(p, rdfComplexNodes, predicateMaxWidth, first, true) ;
                     Collections.sort(rdfComplexNodes, compComplex);
-                    System.out.println("complex: "+rdfComplexNodes.toString());
+                    writePredicateObjectList(p, rdfComplexNodes, predicateMaxWidth, first, true) ;
                 }
             }
         }
 
         private void writePredicateObject(Node p, Node obj, int predicateMaxWidth, boolean first) {
             writePredicate(p, predicateMaxWidth, first) ;
-            out.incIndent(INDENT_OBJECT) ;
+            out.incIndent(indent_base) ;
             writeNodePretty(obj) ;
-            out.decIndent(INDENT_OBJECT) ;
+            out.decIndent(indent_base) ;
         }
 
         private void writePredicateObjectList(Node p, List<Node> objects, int predicateMaxWidth, boolean first, boolean complex) {
             writePredicate(p, predicateMaxWidth, first) ;
-            out.incIndent(INDENT_OBJECT) ;
+            out.incIndent(indent_base) ;
 
             boolean firstObject = true ;
             for ( Node o : objects ) {
@@ -663,7 +672,7 @@ public class TurtleShell {
                             out.print(", ") ;
                     if (complex) {
                         println();
-                        out.pad(INDENT_OBJECT) ;
+                        out.pad(indent_base) ;
                     }
                 }
                 else
@@ -673,7 +682,7 @@ public class TurtleShell {
                 else
                     writeNode(o) ;
             }
-            out.decIndent(INDENT_OBJECT) ;
+            out.decIndent(indent_base) ;
         }
 
         /** Write a predicate - jump to next line if deemed long */
@@ -804,7 +813,7 @@ public class TurtleShell {
 
                 first = false ;
                 //Literals with newlines: int x1 = out.getRow() ;
-                // Adds INDENT_OBJECT even for a [ one triple ]
+                // Adds indent_base even for a [ one triple ]
                 // Special case [ one triple ]??
                 writeNodePretty(n) ;
                 //Literals with newlines:int x2 = out.getRow() ;
@@ -860,10 +869,6 @@ public class TurtleShell {
                 gap(GAP_S_P) ;
         }
     }
-
-    private static final Comparator<Node> compPredicates = new ComparePredicates() ;
-    private static final Comparator<Node> compLiterals = new CompareLiterals() ;
-    private static final List<String> propUriSortList = Arrays.asList(RDF.type.getURI(), RDFS.label.getURI());
 
     protected final void writeNode(Node node) {
         nodeFmt.format(out, node) ;

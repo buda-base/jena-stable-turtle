@@ -1,6 +1,6 @@
 package io.bdrc.jena.sttl;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -18,13 +18,18 @@ public class CompareComplex implements Comparator<Node> {
     public Comparator<Node> compLiteral = defaultCompLiteral;
     public List<String> propUris = null;
     public Graph g = null;
+    public static final List<String> defaultPropUris = new ArrayList<>();
+    static {
+    	defaultPropUris.add(RDF.type.getURI());
+    	defaultPropUris.add(RDFS.label.getURI());
+    }
 
     public static List<String> getDefaultPropUris() {
-    	return Arrays.asList(RDF.type.getURI(), RDFS.label.getURI());
+    	return defaultPropUris;
     }
     
     public CompareComplex(final Graph g) {
-    	this(defaultCompLiteral, getDefaultPropUris(), g);
+    	this(defaultCompLiteral, defaultPropUris, g);
     }
     
     public CompareComplex(final Comparator<Node> compLiteral, final List<String> propUris, final Graph g) {

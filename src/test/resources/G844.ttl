@@ -1,0 +1,91 @@
+@prefix bdr:   <http://purl.bdrc.io/resource/> .
+@prefix bdd:   <http://purl.bdrc.io/data/> .
+@prefix tbr:   <http://purl.bdrc.io/ontology/toberemoved/> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix adm:   <http://purl.bdrc.io/ontology/admin/> .
+@prefix vcard: <http://www.w3.org/2006/vcard/ns#> .
+@prefix bdo:   <http://purl.bdrc.io/ontology/> .
+
+bdr:G844  a                       bdo:Place ;
+    skos:altLabel                 "འདི་ཕྱག་བཏབ་པའི་དུས་ཚོད་ལ་ལས་༡༡༥༠ལོ་བྲིས་པ་མངོན་མོད། དེ་དུས་ཕྱག་འདེབས་པ།"@bo , "bya pa khri dpon gyi mnga' khongs"@bo-latn-x-ewts ;
+    skos:prefLabel                "bya yul"@bo-latn-x-ewts ;
+    bdo:note                      [ bdo:noteLocationStatement  "p.1467-1468" ;
+                                    bdo:noteText               "བྱ་པ་ཁྲི་དཔོན་དང་འབྲེལ་བའི་ཆོས་རྒྱལ་བྱ་པའི་ལོ་རྒྱུས་དཔྱིད་ཀྱི་རྒྱལ་མོའི་གླུ་དབྱངས་ཀྱི་ནང་དོན་དང་འབྲེལ་ནས་བཀོད་པ་གསལ།"@en ;
+                                    bdo:noteWork               bdr:W26372
+                                  ] , 
+            [ bdo:noteText  "the region of the rulers of the bya principality in southern tibet"@en ] ;
+    bdo:placeChgisId              "854" ;
+    bdo:placeContains             bdr:G1183 , bdr:G229 , bdr:G2CN10883 , bdr:G3478 , bdr:G3JT12502 , bdr:G4885 ;
+    bdo:placeEvent                [ a                          bdo:PlaceFounded ;
+                                    bdo:note                   [ bdo:noteLocationStatement  "test" ;
+                                                                 bdo:noteText               "event note test"@en ;
+                                                                 bdo:noteWork               bdr:Wtest
+                                                               ] ;
+                                    bdo:onOrAbout              "1187" ;
+                                    bdo:placeEventAffiliation  bdr:TraditionKagyu , bdr:TraditionTest
+                                  ] , 
+            [ a              bdo:PlaceFounded ;
+              bdo:onOrAbout  "13uu/17uu"
+            ] ;
+    bdo:placeGonpaPerEcumen       "7.51" ;
+    bdo:placeLat                  "29.63984" ;
+    bdo:placeLocatedIn            bdr:G843 ;
+    bdo:placeLong                 "91.22002" ;
+    bdo:placeRegionPoly           "Some polygon coordinates" ;
+    bdo:placeType                 bdr:NotSpecified ;
+    bdo:placeWBArea               "test" ;
+    bdo:status                    bdr:StatusReleased ;
+    adm:logEntry                  [ adm:logMessage  "added contain"@en ;
+                                    adm:logWhen     "2012-10-12T12:21:11.602Z"^^xsd:dateTime ;
+                                    adm:logWho      bdr:U7
+                                  ] , 
+            [ adm:logMessage  "type changed from traditionalPlaceName to srolRgyunGyiSaMing"@en ;
+              adm:logWhen     "2012-12-11T17:39:05.287Z"^^xsd:dateTime ;
+              adm:logWho      bdr:U20
+            ] , 
+            [ adm:logMessage  "added byams pa chos gling gzhis ka'i par khang"@en ;
+              adm:logWhen     "2013-02-05T10:28:55.426Z"^^xsd:dateTime ;
+              adm:logWho      bdr:U13
+            ] , 
+            [ adm:logMessage  "added contain"@en ;
+              adm:logWhen     "2013-02-25T16:44:50.079Z"^^xsd:dateTime ;
+              adm:logWho      bdr:U7
+            ] , 
+            [ adm:logMessage  "added type & location & contains"@en ;
+              adm:logWhen     "2013-04-01T09:36:07.005Z"^^xsd:dateTime ;
+              adm:logWho      bdr:U7
+            ] , 
+            [ adm:logMessage  "added place contained"@en ;
+              adm:logWhen     "2013-05-29T12:18:47.035Z"^^xsd:dateTime ;
+              adm:logWho      bdr:U20
+            ] , 
+            [ adm:logMessage  "added location"@en ;
+              adm:logWhen     "2014-01-06T14:22:58.026Z"^^xsd:dateTime ;
+              adm:logWho      bdr:U7
+            ] , 
+            [ adm:logMessage  "added name & note"@en ;
+              adm:logWhen     "2014-02-19T14:10:50.715Z"^^xsd:dateTime ;
+              adm:logWho      bdr:U7
+            ] ;
+    adm:place_TLM_accession       "004476" ;
+    adm:place_TLM_admin           "tgaAdmin" ;
+    adm:place_TLM_adminEmail      "xxx" ;
+    adm:place_TLM_code            "TGA" ;
+    adm:place_TLM_librarian       "tgaLibrarian" ;
+    adm:place_TLM_librarianEmail  "xxx" ;
+    adm:place_TLM_num             "003159" ;
+    adm:place_TLM_taxonomy        bdr:O1TLMXXX000011 ;
+    adm:place_id_TBRC             "540102200:540101145" ;
+    adm:place_id_lex              "540102200:540101145" ;
+    tbr:place_dist_py             "Lhasa Shi" ;
+    tbr:place_gb_dist             "5401" ;
+    tbr:place_gonpa_per1000       "7.514" ;
+    tbr:place_name_kr             "萨迦·衮噶坚赞｜萨迦班智达" ;
+    tbr:place_name_lex            "tshal gung thang" , "tshal gung thang G844" ;
+    tbr:place_prov_py             "Xizang" ;
+    tbr:place_town_ch             "蔡公堂乡" ;
+    tbr:place_town_syl            "Cai Gong Tang Xiang" .

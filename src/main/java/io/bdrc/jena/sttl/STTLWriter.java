@@ -14,14 +14,15 @@ import org.apache.jena.sparql.util.Context;
 public class STTLWriter extends TurtleWriterBase {
 
     public static Lang lang = null;
+    public static final String SYMBOLS_NS = "http://bdrc.io/sttl#" ;
     
     public static Lang registerWriter() {
     	return registerWriter("STTL", "stupid-content");
     }
     
-    public static Lang registerWriter(String langName, String mimeType) {
+    public static Lang registerWriter(String langName, String contentType) {
         if (lang != null) return lang;
-        lang = LangBuilder.create(langName, mimeType).build();
+        lang = LangBuilder.create(langName, contentType).build();
         RDFLanguages.register(lang);
         RDFFormat format = new RDFFormat(lang);
         RDFWriterRegistry.register(lang, format);

@@ -8,13 +8,24 @@ import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFWriter;
+import org.apache.jena.riot.RDFWriterBuilder;
+import org.apache.jena.sparql.util.Context;
+import org.apache.jena.sparql.util.Symbol;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.apache.jena.vocabulary.SKOS;
 import org.junit.Test;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.hamcrest.Matchers.*;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -128,6 +139,36 @@ public class TestSttl {
 		List<Node> list = Arrays.asList(r0.asNode(), r1.asNode(), r2.asNode(), r3.asNode(), r4.asNode(), r5.asNode());
 		Collections.sort(list, new CompareComplex(m.getGraph()));
 		assertThat(list, contains(r2.asNode(), r3.asNode(), r0.asNode(), r1.asNode(), r4.asNode(), r5.asNode()));
+	}
+	
+	@Test
+	public void testGeneral() throws IOException {
+		Model m = ModelFactory.createDefaultModel();
+		//read("src/test/resources/G844.ttl", "TURTLE");
+		String content = new String(Files.readAllBytes(Paths.get("src/test/resources/G844.ttl"))).trim();
+		m.read("src/test/resources/G844.ttl", "TURTLE");
+		m.setNsPrefix("bdo", "http://purl.bdrc.io/ontology/");
+		Lang sttl = STTLWriter.registerWriter();
+		SortedMap<String, Integer> nsPrio = ComparePredicates.getDefaultNSPriorities();
+		nsPrio.put(SKOS.getURI(), 1);
+		nsPrio.put("http://purl.bdrc.io/ontology/admin/", 5);
+		nsPrio.put("http://purl.bdrc.io/ontology/toberemoved/", 6);
+		List<String> predicatesPrio = CompareComplex.getDefaultPropUris();
+		predicatesPrio.add("http://purl.bdrc.io/ontology/admin/logWhen");
+		predicatesPrio.add("http://purl.bdrc.io/ontology/onOrAbout");
+		predicatesPrio.add("http://purl.bdrc.io/ontology/noteText");
+		Context ctx = new Context();
+		ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "nsPriorities"), nsPrio);
+		ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "nsDefaultPriority"), 2);
+		ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "complexPredicatesPriorities"), predicatesPrio);
+		ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "indentBase"), 4);
+		RDFWriter w = RDFWriter.create().source(m.getGraph()).context(ctx).lang(sttl).build();
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		w.output(baos);
+		w.output("/tmp/toto");
+		String res = baos.toString().trim();
+		System.out.println(res);
+		assertTrue(res.equals(content));
 	}
 	
 }
