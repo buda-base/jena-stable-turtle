@@ -12,6 +12,13 @@ import org.apache.jena.riot.system.RiotLib;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 
+/**
+* Blank nodes comparator.
+*  
+* @author Elie Roux
+* @author Buddhist Digital Resource Center (BDRC)
+* @version 0.1.0
+*/
 public class CompareComplex implements Comparator<Node> {
     
 	public static Comparator<Node> defaultCompLiteral = new CompareLiterals();
@@ -24,14 +31,35 @@ public class CompareComplex implements Comparator<Node> {
     	defaultPropUris.add(RDFS.label.getURI());
     }
 
+	/**
+	* @return default predicate URIs for sorting
+	*/
     public static List<String> getDefaultPropUris() {
     	return defaultPropUris;
     }
-    
+
+	/**
+	* Default constructor. Needs a graph as we need to
+	* fetch the objects of the different predicated in
+	* a particular graph.
+	* 
+	* @param g
+	* The graph in which the comparison occurs.
+	*/
     public CompareComplex(final Graph g) {
     	this(defaultCompLiteral, defaultPropUris, g);
     }
     
+    /**
+	* Advanced constructor.
+	* 
+	* @param compLiteral
+	* The Comparator that will be used for object comparison.
+	* @param propUris
+	* A list of predicate URIs that will be tried for the comparison.
+	* @param g
+	* The graph in which the comparison occurs.
+	*/
     public CompareComplex(final Comparator<Node> compLiteral, final List<String> propUris, final Graph g) {
         super();
         this.compLiteral = compLiteral;
@@ -39,6 +67,19 @@ public class CompareComplex implements Comparator<Node> {
         this.g = g;
     }
     
+    /**
+	* Main comparison function. Compares the objects
+	* associated with the predicate URIs given to the
+	* constructor, until a difference occurs.
+	* 
+	* @param t1
+	* The first node to compare.
+	* @param t2
+	* The second node to compare
+	* @return
+	* -1 or 1 in case of asserted comparison, 0 in case of equality or
+	* impossibility to compare (all listed predicates have the same value).
+	*/
     @Override
     public int compare(final Node t1, final Node t2) {
         // sort by property

@@ -126,13 +126,13 @@ public class TurtleShell {
         }
     }
 
-    /** Write graph in Turtle syntax (or part of TriG) */
+    /* Write graph in Turtle syntax (or part of TriG) */
     protected void writeGraphTTL(Graph graph) {
         ShellGraph x = new ShellGraph(graph, null, null) ;
         x.writeGraph() ;
     }    
 
-    /** Write graph in Turtle syntax (or part of TriG). graphName is null for default graph. */
+    /* Write graph in Turtle syntax (or part of TriG). graphName is null for default graph. */
     protected void writeGraphTTL(DatasetGraph dsg, Node graphName) {
         Graph g = (graphName == null || Quad.isDefaultGraph(graphName)) 
             ? dsg.getDefaultGraph()
