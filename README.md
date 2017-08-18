@@ -44,6 +44,10 @@ Context ctx = new Context();
 ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "nsPriorities"), nsPrio);
 ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "nsDefaultPriority"), 2);
 ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "complexPredicatesPriorities"), predicatesPrio);
+// the base indentation, defaults to 4
+ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "nsBaseIndent"), 4);
+// the minimal predicate width, defaults to 14
+ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "predicateBaseWidth"), 14);
 Graph g = ... ; // fetch the graph you want to write
 RDFWriter w = RDFWriter.create().source().context(ctx).lang(sttl).build();
 w.output( ... ); // write somewhere
