@@ -67,6 +67,7 @@ public class TurtleShell {
     protected final String         baseURI ;
     
     protected int indent_base = 4;
+    protected int predicate_base_width = 14;
     
     private Comparator<Node>              compPredicates ;
     private static final Comparator<Node> compLiterals = new CompareLiterals() ;
@@ -98,8 +99,9 @@ public class TurtleShell {
         	this.complexPredicatesPriorities = context.get(s);
         
         s = Symbol.create(STTLWriter.SYMBOLS_NS + "indentBase");
-        if (context != null && context.isDefined(s))
-        	this.indent_base = context.get(s);
+    	this.indent_base = context.getInt(s, 4);
+        s = Symbol.create(STTLWriter.SYMBOLS_NS + "predicateBaseWidth");
+    	this.predicate_base_width = context.getInt(s, 14);
     }
 
     protected void writeBase(String base) {
@@ -627,7 +629,10 @@ public class TurtleShell {
             Collection<Node> predicates = pGroups.keySet() ;
 
             // Find longest predicate URI
-            int predicateMaxWidth = RiotLib.calcWidth(prefixMap, baseURI, predicates, MIN_PREDICATE, LONG_PREDICATE) ;
+            //int predicateMaxWidth = RiotLib.calcWidth(prefixMap, baseURI, predicates, MIN_PREDICATE, LONG_PREDICATE) ;
+            
+            // see https://github.com/BuddhistDigitalResourceCenter/jena-stable-turtle/issues/1
+        	int predicateMaxWidth = predicate_base_width;
 
             boolean first = true ;
 

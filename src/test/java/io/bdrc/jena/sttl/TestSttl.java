@@ -155,7 +155,8 @@ public class TestSttl {
 		ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "nsPriorities"), nsPrio);
 		ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "nsDefaultPriority"), 2);
 		ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "complexPredicatesPriorities"), predicatesPrio);
-		ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "indentBase"), 4);
+		ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "indentBase"), 3);
+		ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "predicateBaseWidth"), 12);
 		// G844
 		String content = new String(Files.readAllBytes(Paths.get("src/test/resources/G844.ttl"))).trim();
 		m.read("src/test/resources/G844.ttl", "TURTLE");
