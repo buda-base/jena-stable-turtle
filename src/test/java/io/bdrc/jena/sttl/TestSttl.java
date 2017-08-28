@@ -140,6 +140,37 @@ public class TestSttl {
 	}
 	
 	@Test
+	public void testComplex() throws IOException {
+		String px = "http://purl.bdrc.io/ontology/";
+		List<String> predicatesPrio = CompareComplex.getDefaultPropUris();
+		predicatesPrio.add(px+"admin/logWhen");
+		predicatesPrio.add(px+"onOrAbout");
+		predicatesPrio.add(px+"noteText");
+		Model m = ModelFactory.createDefaultModel();
+		CompareComplex compComp = new CompareComplex(m.getGraph());
+		Resource b0 = m.createResource();
+		Resource b1 = m.createResource();
+		// one non-listed properties, sort in a simple way
+		b0.addProperty(m.createProperty(px, "prop2"), m.createLiteral("a"));
+		b1.addProperty(m.createProperty(px, "prop2"), m.createLiteral("b"));
+		List<Node> list = Arrays.asList(b0.asNode(), b1.asNode());
+		Collections.sort(list, compComp);
+		assertThat(list, contains(b0.asNode(), b1.asNode()));
+		// another non-listed properties, sorted before
+		b0.addProperty(m.createProperty(px, "prop1"), m.createLiteral("b"));
+		b1.addProperty(m.createProperty(px, "prop1"), m.createLiteral("a"));
+		list = Arrays.asList(b0.asNode(), b1.asNode());
+		Collections.sort(list, compComp);
+		assertThat(list, contains(b1.asNode(), b0.asNode()));
+		// adding a listed property:
+		b0.addProperty(m.createProperty(px, "onOrAbout"), "a");
+		b1.addProperty(m.createProperty(px, "onOrAbout"), "b");
+		list = Arrays.asList(b0.asNode(), b1.asNode());
+		Collections.sort(list, compComp);
+		assertThat(list, contains(b0.asNode(), b1.asNode()));
+	}
+	
+	@Test
 	public void testGeneral() throws IOException {
 		Model m = ModelFactory.createDefaultModel();
 		Lang sttl = STTLWriter.registerWriter();

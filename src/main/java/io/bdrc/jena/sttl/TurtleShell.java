@@ -23,7 +23,6 @@ import static org.apache.jena.riot.writer.WriterConst.GAP_P_O ;
 import static org.apache.jena.riot.writer.WriterConst.GAP_S_P ;
 import static org.apache.jena.riot.writer.WriterConst.LONG_PREDICATE ;
 import static org.apache.jena.riot.writer.WriterConst.LONG_SUBJECT ;
-import static org.apache.jena.riot.writer.WriterConst.MIN_PREDICATE ;
 import static org.apache.jena.riot.writer.WriterConst.OBJECT_LISTS ;
 import static org.apache.jena.riot.writer.WriterConst.PREFIX_IRI;
 import static org.apache.jena.riot.writer.WriterConst.RDF_First ;
@@ -43,7 +42,6 @@ import org.apache.jena.graph.Graph ;
 import org.apache.jena.graph.Node ;
 import org.apache.jena.graph.Triple ;
 import org.apache.jena.riot.RIOT ;
-import org.apache.jena.riot.other.GLib ;
 import org.apache.jena.riot.out.NodeFormatter ;
 import org.apache.jena.riot.out.NodeFormatterTTL ;
 import org.apache.jena.riot.out.NodeFormatterTTL_MultiLine ;
@@ -327,7 +325,7 @@ public class TurtleShell {
         }
         
         /** Get triples with the same subject */
-        private Collection<Triple> triplesOfSubject(Node subj) {
+        Collection<Triple> triplesOfSubject(Node subj) {
             return RiotLib.triplesOfSubject(graph, subj) ;
         }
 
@@ -912,4 +910,5 @@ public class TurtleShell {
         out.println() ;
         // out.flush() ;
     }
+
 }
