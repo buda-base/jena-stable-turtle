@@ -4,7 +4,7 @@
   <groupId>io.bdrc</groupId>
   <artifactId>jena-stable-turtle</artifactId>
   <packaging>jar</packaging>
-  <version>0.3.0-SNAPSHOT</version>
+  <version>0.3.0</version>
   <name>jena-stable-turtle</name>
   <description>Stable turtle output plugin for apache Jena</description>
   <url>http://github.com/BuddhistDigitalResourceCenter/jena-stable-turtle</url>
