@@ -12,7 +12,7 @@
 bdr:G844  a      bdo:Place ;
    skos:altLabel  "འདི་ཕྱག་བཏབ་པའི་དུས་ཚོད་ལ་ལས་༡༡༥༠ལོ་བྲིས་པ་མངོན་མོད། དེ་དུས་ཕྱག་འདེབས་པ།"@bo , "bya pa khri dpon gyi mnga' khongs"@bo-latn-x-ewts ;
    skos:prefLabel  "bya yul"@bo-latn-x-ewts ;
-   bdo:note      [ bdo:noteText  "the region of the rulers of the bya principality in southern tibet"@en ] , 
+   bdo:note      [ bdo:noteText  "the region of the rulers of the bya principality in southern tibet"@en ] ,
          [ bdo:noteLocationStatement  "p.1467-1468" ;
            bdo:noteText  "བྱ་པ་ཁྲི་དཔོན་དང་འབྲེལ་བའི་ཆོས་རྒྱལ་བྱ་པའི་ལོ་རྒྱུས་དཔྱིད་ཀྱི་རྒྱལ་མོའི་གླུ་དབྱངས་ཀྱི་ནང་དོན་དང་འབྲེལ་ནས་བཀོད་པ་གསལ།"@en ;
            bdo:noteWork  bdr:W26372
@@ -26,7 +26,7 @@ bdr:G844  a      bdo:Place ;
                                    ] ;
                      bdo:onOrAbout  "1187" ;
                      bdo:placeEventAffiliation  bdr:TraditionKagyu , bdr:TraditionTest
-                   ] , 
+                   ] ,
          [ a             bdo:PlaceFounded ;
            bdo:onOrAbout  "13uu/17uu"
          ] ;
@@ -41,31 +41,31 @@ bdr:G844  a      bdo:Place ;
    adm:logEntry  [ adm:logMessage  "added contain"@en ;
                    adm:logWhen   "2012-10-12T12:21:11.602Z"^^xsd:dateTime ;
                    adm:logWho    bdr:U7
-                 ] , 
+                 ] ,
          [ adm:logMessage  "type changed from traditionalPlaceName to srolRgyunGyiSaMing"@en ;
            adm:logWhen   "2012-12-11T17:39:05.287Z"^^xsd:dateTime ;
            adm:logWho    bdr:U20
-         ] , 
+         ] ,
          [ adm:logMessage  "added byams pa chos gling gzhis ka'i par khang"@en ;
            adm:logWhen   "2013-02-05T10:28:55.426Z"^^xsd:dateTime ;
            adm:logWho    bdr:U13
-         ] , 
+         ] ,
          [ adm:logMessage  "added contain"@en ;
            adm:logWhen   "2013-02-25T16:44:50.079Z"^^xsd:dateTime ;
            adm:logWho    bdr:U7
-         ] , 
+         ] ,
          [ adm:logMessage  "added type & location & contains"@en ;
            adm:logWhen   "2013-04-01T09:36:07.005Z"^^xsd:dateTime ;
            adm:logWho    bdr:U7
-         ] , 
+         ] ,
          [ adm:logMessage  "added place contained"@en ;
            adm:logWhen   "2013-05-29T12:18:47.035Z"^^xsd:dateTime ;
            adm:logWho    bdr:U20
-         ] , 
+         ] ,
          [ adm:logMessage  "added location"@en ;
            adm:logWhen   "2014-01-06T14:22:58.026Z"^^xsd:dateTime ;
            adm:logWho    bdr:U7
-         ] , 
+         ] ,
          [ adm:logMessage  "added name & note"@en ;
            adm:logWhen   "2014-02-19T14:10:50.715Z"^^xsd:dateTime ;
            adm:logWho    bdr:U7

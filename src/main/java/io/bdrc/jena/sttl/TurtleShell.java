@@ -686,18 +686,16 @@ public class TurtleShell {
             for ( Node o : objects ) {
                 if ( !firstObject ) {
                     if ( out.getCurrentOffset() > 0 )
-                        out.print(" , ") ;
+                        out.print(" ,") ;
                     else
                         // Before the current indent, due to a multiline literal being written raw.
                         // We will pad spaces to indent on output spaces.  Don't add a first " "
-                        if (complex)
-                            out.print(",") ;
-                        else
-                            out.print(", ") ;
+                        out.print(",") ;
                     if (complex) {
                         println();
                         out.pad(indent_base) ;
-                    }
+                    } else
+                        out.print(' ');
                 }
                 else
                     firstObject = false ;

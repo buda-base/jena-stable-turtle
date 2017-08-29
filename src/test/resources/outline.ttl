@@ -13,11 +13,11 @@ bdr:O2DB87572  a  adm:Outline ;
    :workLocation  [ :workLocationWork  bdr:W30020 ] ;
    adm:logEntry  [ adm:logWhen   "2009-09-15T14:51:25.708Z"^^xsd:dateTime ;
                    adm:logWho    bdr:U3
-                 ] , 
+                 ] ,
          [ adm:logMessage  "zhu dag byas"@en ;
            adm:logWhen   "2009-12-28T10:00:20.456Z"^^xsd:dateTime ;
            adm:logWho    bdr:U21
-         ] , 
+         ] ,
          [ adm:logMessage  "vol. 1 outline images fixed"@en ;
            adm:logWhen   "2014-10-03T14:40:05.896Z"^^xsd:dateTime ;
            adm:logWho    bdr:U19
