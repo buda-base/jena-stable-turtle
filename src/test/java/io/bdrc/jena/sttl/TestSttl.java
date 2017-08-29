@@ -146,33 +146,50 @@ public class TestSttl {
 	
 	@Test
 	public void testComplex() throws IOException {
-		String px = "http://purl.bdrc.io/ontology/";
-		List<String> predicatesPrio = CompareComplex.getDefaultPropUris();
-		predicatesPrio.add(px+"admin/logWhen");
-		predicatesPrio.add(px+"onOrAbout");
-		predicatesPrio.add(px+"noteText");
-		Model m = ModelFactory.createDefaultModel();
-		CompareComplex compComp = new CompareComplex(m.getGraph());
-		Resource b0 = m.createResource();
-		Resource b1 = m.createResource();
-		// one non-listed properties, sort in a simple way
-		b0.addProperty(m.createProperty(px, "prop2"), m.createLiteral("a"));
-		b1.addProperty(m.createProperty(px, "prop2"), m.createLiteral("b"));
-		List<Node> list = Arrays.asList(b0.asNode(), b1.asNode());
-		Collections.sort(list, compComp);
-		assertThat(list, contains(b0.asNode(), b1.asNode()));
-		// another non-listed properties, sorted before
-		b0.addProperty(m.createProperty(px, "prop1"), m.createLiteral("b"));
-		b1.addProperty(m.createProperty(px, "prop1"), m.createLiteral("a"));
-		list = Arrays.asList(b0.asNode(), b1.asNode());
-		Collections.sort(list, compComp);
-		assertThat(list, contains(b1.asNode(), b0.asNode()));
-		// adding a listed property:
-		b0.addProperty(m.createProperty(px, "onOrAbout"), "a");
-		b1.addProperty(m.createProperty(px, "onOrAbout"), "b");
-		list = Arrays.asList(b0.asNode(), b1.asNode());
-		Collections.sort(list, compComp);
-		assertThat(list, contains(b0.asNode(), b1.asNode()));
+	    String px = "http://purl.bdrc.io/ontology/";
+	    Model m = ModelFactory.createDefaultModel();
+	    CompareComplex compComp = new CompareComplex(m.getGraph());
+	    Resource b0 = m.createResource(new AnonId("b0"));
+	    Resource b1 = m.createResource(new AnonId("b1"));
+	    // one non-listed properties, sort in a simple way
+	    b0.addProperty(m.createProperty(px, "prop9"), m.createLiteral("a"));
+	    b1.addProperty(m.createProperty(px, "prop9"), m.createLiteral("b"));
+	    List<Node> list = Arrays.asList(b0.asNode(), b1.asNode());
+	    Collections.sort(list, compComp);
+	    assertThat(list, contains(b0.asNode(), b1.asNode()));
+	    // another non-listed properties, sorted before
+	    b0.addProperty(m.createProperty(px, "prop8"), m.createLiteral("b"));
+	    b1.addProperty(m.createProperty(px, "prop8"), m.createLiteral("a"));
+	    list = Arrays.asList(b0.asNode(), b1.asNode());
+	    Collections.sort(list, compComp);
+	    assertThat(list, contains(b1.asNode(), b0.asNode()));
+	    // adding a property sorting previously in alphabetical order:
+	    b0.addProperty(m.createProperty(px, "prop7"), m.createLiteral("a"));
+	    b1.addProperty(m.createProperty(px, "prop7"), m.createLiteral("b"));
+	    list = Arrays.asList(b0.asNode(), b1.asNode());
+	    Collections.sort(list, compComp);
+	    assertThat(list, contains(b0.asNode(), b1.asNode()));
+	    // test recursion on one level:
+	    Resource b2 = m.createResource(new AnonId("b2"));
+	    Resource b3 = m.createResource(new AnonId("b3"));
+	    b0.addProperty(m.createProperty(px, "prop6"), b2);
+	    b1.addProperty(m.createProperty(px, "prop6"), b3);
+	    // with just blank nodes with no property, nothing changes:
+	    list = Arrays.asList(b0.asNode(), b1.asNode());
+	    Collections.sort(list, compComp);
+	    assertThat(list, contains(b0.asNode(), b1.asNode()));
+	    // sub-blank nodes with one property
+	    b2.addProperty(m.createProperty(px, "prop9"), m.createLiteral("c"));
+	    b3.addProperty(m.createProperty(px, "prop9"), m.createLiteral("d"));
+	    list = Arrays.asList(b0.asNode(), b1.asNode());
+	    Collections.sort(list, compComp);
+	    assertThat(list, contains(b0.asNode(), b1.asNode()));
+	    // inverting sub-blank nodes order
+	    b2.addProperty(m.createProperty(px, "prop8"), m.createLiteral("d"));
+	    b3.addProperty(m.createProperty(px, "prop8"), m.createLiteral("c"));
+	    list = Arrays.asList(b0.asNode(), b1.asNode());
+	    Collections.sort(list, compComp);
+	    assertThat(list, contains(b1.asNode(), b0.asNode()));
 	}
 	
 	@Test

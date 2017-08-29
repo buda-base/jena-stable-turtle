@@ -82,7 +82,7 @@ public class CompareComplex implements Comparator<Node> {
 		return x ;
 	}
 
-	public int comparePGroups(SortedMap<String, List<Node>> pGroups1, SortedMap<String, List<Node>> pGroups2) {
+	public Integer comparePGroups(SortedMap<String, List<Node>> pGroups1, SortedMap<String, List<Node>> pGroups2, boolean doRecurse) {
 		// only stable if there is one object per compared property
 		for (Entry<String, List<Node>> e : pGroups1.entrySet()) {
 			if (!pGroups2.containsKey(e.getKey())) {
@@ -90,17 +90,23 @@ public class CompareComplex implements Comparator<Node> {
 			}
 			final Node o1 = e.getValue().get(0);
 			final Node o2 = pGroups2.get(e.getKey()).get(0); 
-			//System.out.println("comparing "+e.getKey()+": "+o1.toString()+" and "+o2.toString());
 			Integer res = CompareLiterals.compareUri(o1, o2);
 			if (res != null && res != 0) 
 				return res;
 			if (res != null && res == 0)
 				continue;
+			if (res == null && o1.isBlank() && o2.isBlank() && doRecurse) {
+				res = compare(o1, o2, false);
+				if (res != null && res != 0)
+					return res;
+				continue;
+			}
 			res = compLiteral.compare(o1, o2);
 			if (res != 0)
 				return res;
 		}
-		return 0;
+		// we don't want to return 0 when inside a recursion (doRecurse == false)
+		return doRecurse ? 0 : null;
 	}
 
 	/**
@@ -118,6 +124,10 @@ public class CompareComplex implements Comparator<Node> {
 	 */
 	@Override
 	public int compare(final Node t1, final Node t2) {
+		return compare(t1, t2, true);
+	}
+	
+	public Integer compare(final Node t1, final Node t2, boolean doRecurse) {
 		// sort by property
 		Integer res = CompareLiterals.compareUri(t1, t2);
 		if (res != null) return res;
@@ -144,6 +154,11 @@ public class CompareComplex implements Comparator<Node> {
 				return res;
 			if (res != null && res == 0)
 				continue;
+			if (res == null && t1n.isBlank() && t2n.isBlank() && doRecurse) {
+				res = compare(t1n, t2n, false);
+				if (res != 0)
+					return res;
+			}
 			res = compLiteral.compare(t1n, t2n);
 			if (res != 0)
 				return res;
@@ -154,9 +169,10 @@ public class CompareComplex implements Comparator<Node> {
 		final SortedMap<String, List<Node>> pGroups1 = groupByPredicates(clusterT1);
 		final SortedMap<String, List<Node>> pGroups2 = groupByPredicates(clusterT2) ;
 		if (pGroups1.keySet().size() > pGroups2.keySet().size()) {
-			return comparePGroups(pGroups1, pGroups2);
+			return comparePGroups(pGroups1, pGroups2, doRecurse);
 		} else {
-			return -comparePGroups(pGroups2, pGroups1);
+			res = comparePGroups(pGroups2, pGroups1, doRecurse);
+			return (res != null) ? -res : null;
 		}
 	}
 }
