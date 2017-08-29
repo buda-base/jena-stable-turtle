@@ -65,6 +65,8 @@ public final class CompareLiterals implements Comparator<Node> {
         if (t1.isBlank()) {
             if (!t2.isBlank()) 
                 return 1;
+            if (t1.getBlankNodeId().equals(t2.getBlankNodeId()))
+                return 0;
             return null;
         }
         if (t2.isBlank())

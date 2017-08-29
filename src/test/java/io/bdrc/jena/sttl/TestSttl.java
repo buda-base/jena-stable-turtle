@@ -79,6 +79,11 @@ public class TestSttl {
 	            NodeFactory.createLiteral("def", "en", RDF.dtLangString),
 	            NodeFactory.createBlankNode("123")
 		));
+		// test if comparing a blank node with itself returns 0
+		Node bn0 = NodeFactory.createBlankNode("abc");
+		Node bn1 = NodeFactory.createBlankNode("cde");
+		assertTrue(CompareLiterals.compareUri(bn0, bn0) == 0);
+		assertTrue(CompareLiterals.compareUri(bn0, bn1) == null);
 	}
 
 	@Test
