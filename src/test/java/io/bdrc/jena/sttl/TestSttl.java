@@ -190,6 +190,7 @@ public class TestSttl {
 	    list = Arrays.asList(b0.asNode(), b1.asNode());
 	    Collections.sort(list, compComp);
 	    assertThat(list, contains(b1.asNode(), b0.asNode()));
+	    //RDFWriter.create().source(m.getGraph()).lang(STTLWriter.registerWriter()).build().output(System.out);
 	}
 	
 	@Test

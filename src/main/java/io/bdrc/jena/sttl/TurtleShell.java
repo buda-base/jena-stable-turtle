@@ -666,6 +666,7 @@ public class TurtleShell {
                 if ( ! rdfComplexNodes.isEmpty() ) {
                     Collections.sort(rdfComplexNodes, compComplex);
                     writePredicateObjectList(p, rdfComplexNodes, predicateMaxWidth, first, true) ;
+                    first = false;
                 }
             }
         }
