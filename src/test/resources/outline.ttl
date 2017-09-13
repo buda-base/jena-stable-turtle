@@ -32,6 +32,7 @@ bdr:W30020  a    :Work ;
    adm:outlineType  bdr:OutlineTypePartialCollectedWorks .
 
 bdr:W30020_0001  a  :Work ;
+   rdfs:comment  "gser bris number 778"@en , "sde dge number" ;
    skos:prefLabel  "1 (stod cha)"@bo-Latn-x-ewts ;
    :outlineType  bdr:OutlineTypeVolume ;
    :workHasPart  bdr:W30020_0002 ;

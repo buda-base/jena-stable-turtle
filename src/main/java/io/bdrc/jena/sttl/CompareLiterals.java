@@ -113,9 +113,13 @@ public final class CompareLiterals implements Comparator<Node> {
         final String lang1 = t1.getLiteralLanguage();
         final String lang2 = t2.getLiteralLanguage();
         if (!lang1.isEmpty()) {
-            res = lang1.compareTo(lang2);
-            if (res != 0) return res;
-            return compareStrings(t1.getLiteralLexicalForm(), t2.getLiteralLexicalForm(), lang1);
+            if (!lang2.isEmpty()) {
+                res = lang1.compareTo(lang2);
+                if (res != 0) return res;
+                return compareStrings(t1.getLiteralLexicalForm(), t2.getLiteralLexicalForm(), lang1);
+            } else {
+                return -1;
+            }
         } else if (!lang2.isEmpty()) {
             return 1;
         }
