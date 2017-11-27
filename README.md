@@ -18,7 +18,7 @@ Using maven:
 
 ```xml
     <dependency>
-      <groupId>io.bdrc-</groupId>
+      <groupId>io.bdrc</groupId>
       <artifactId>jena-stable-turtle</artifactId>
       <version>0.5.0</version>
     </dependency>
