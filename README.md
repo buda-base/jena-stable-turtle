@@ -1,4 +1,4 @@
-# Jena Stable Turtle output plugin
+# Jena Stable Turtle output plugin 
 
 This repository contains code to define a new [RDF Writer](https://jena.apache.org/documentation/io/rdf-output.html) for [Jena](https://jena.apache.org/) which is turtle always sorted in the same way. It has been developped to reduce the diff noise when the data is stored on a git repository, we are confident there are plenty of other use cases where it will be useful.
 
