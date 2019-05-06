@@ -3,13 +3,17 @@ package io.bdrc.jena.sttl;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.query.Dataset;
+import org.apache.jena.query.DatasetFactory;
 import org.apache.jena.rdf.model.AnonId;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.riot.RDFWriter;
+import org.apache.jena.sparql.core.DatasetGraph;
 import org.apache.jena.sparql.util.Context;
 import org.apache.jena.sparql.util.Symbol;
 import org.apache.jena.vocabulary.RDF;
@@ -22,6 +26,7 @@ import static org.hamcrest.Matchers.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -228,6 +233,16 @@ public class TestSttl {
 		w.output(baos);
 		res = baos.toString().trim();
 		assertTrue(res.equals(content));
+		// test trig:
+		DatasetGraph dsg = DatasetFactory.createGeneral().asDatasetGraph();
+		content = new String(Files.readAllBytes(Paths.get("src/test/resources/multigraphs.trig"))).trim();
+		RDFDataMgr.read(dsg, new StringReader(content), null, Lang.TRIG);
+		Lang strig = STriGWriter.registerWriter();
+		w = RDFWriter.create().source(dsg).context(ctx).lang(strig).build();
+		baos = new ByteArrayOutputStream();
+        w.output(baos);
+        res = baos.toString().trim();
+        assertTrue(res.equals(content));
 	}
 	
 }

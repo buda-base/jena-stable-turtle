@@ -68,7 +68,7 @@ public class TurtleShell {
     protected int predicate_base_width = 14;
     
     private Comparator<Node>              compPredicates ;
-    private static final Comparator<Node> compLiterals = new CompareLiterals() ;
+    protected static final Comparator<Node> compLiterals = new CompareLiterals() ;
     private List<String>                  complexPredicatesPriorities = null ;
 
     protected TurtleShell(IndentedWriter out, PrefixMap pmap, String baseURI, Context context) {
