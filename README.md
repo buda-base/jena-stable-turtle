@@ -56,6 +56,9 @@ w.output( ... ); // write somewhere
 
 ```
 
+Note that for TriG order, you must use the same context namespace as for turtle: `STTLWriter.SYMBOLS_NS`.
+
+
 ## License
 
 All the code on this repository is under the [Apache 2.0 License](LICENSE). 
