@@ -4,7 +4,7 @@
   <groupId>io.bdrc</groupId>
   <artifactId>jena-stable-turtle</artifactId>
   <packaging>jar</packaging>
-  <version>0.6.0</version>
+  <version>0.7.0</version>
   <name>jena-stable-turtle</name>
   <description>Stable turtle / trig output plugin for apache Jena</description>
   <url>http://github.com/buda-base/jena-stable-turtle</url>
@@ -64,7 +64,7 @@
     <dependency>
       <groupId>org.apache.jena</groupId>
       <artifactId>jena-arq</artifactId>
-      <version>3.11.0</version>
+      <version>3.14.0</version>
     </dependency>
   </dependencies>
   <profiles>
