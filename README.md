@@ -22,7 +22,7 @@ Using maven:
     <dependency>
       <groupId>io.bdrc</groupId>
       <artifactId>jena-stable-turtle</artifactId>
-      <version>0.6.0</version>
+      <version>0.7.1</version>
     </dependency>
 ```
 
