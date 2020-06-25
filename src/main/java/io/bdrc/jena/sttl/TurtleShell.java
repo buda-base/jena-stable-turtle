@@ -123,7 +123,7 @@ public class TurtleShell {
         // had to rewrite that to order it properly:
         if (prefixMap == null || prefixMap.isEmpty())
             return;
-        final Map<String, String> map = prefixMap.getMappingCopyStr();
+        final Map<String, String> map = prefixMap.getMappingCopy();
         final List<String> sortedKeys = new ArrayList<String>(map.keySet());
         Collections.sort(sortedKeys);
         for (String prefix : sortedKeys) {
