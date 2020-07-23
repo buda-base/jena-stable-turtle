@@ -25,6 +25,12 @@ Using maven:
       <version>0.7.2</version>
     </dependency>
 ```
+build and deploy:
+```
+mvn clean package
+mvn deploy -DperformRelease=true
+```
+Then go to https://oss.sonatype.org/ and do the close and release
 
 ## Use
 
