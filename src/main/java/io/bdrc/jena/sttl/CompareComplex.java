@@ -3,6 +3,7 @@ package io.bdrc.jena.sttl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.SortedMap;
@@ -13,6 +14,9 @@ import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.riot.system.RiotLib;
+import org.apache.jena.sparql.core.DatasetGraph;
+import org.apache.jena.sparql.core.Quad;
+import org.apache.jena.util.iterator.ExtendedIterator;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 
@@ -127,14 +131,41 @@ public class CompareComplex implements Comparator<Node> {
 		return compare(t1, t2, true);
 	}
 	
+	// copied from https://github.com/apache/jena/blob/c78176284b89c00fff929cd18e15e2b704991887/jena-arq/src/main/java/org/apache/jena/riot/system/RiotLib.java#L273
+	public static Triple getOneTriple(final Graph graph, final Node s, final Node p, final Node o) {
+            ExtendedIterator<Triple> iter = graph.find(s, p, o);
+            try {
+                if ( !iter.hasNext() )
+                    return null;
+                Triple t = iter.next();
+                if ( iter.hasNext() )
+                    return null;
+                return t;
+            }
+            finally {
+                iter.close();
+            }
+	   }
+	
+	   // copied from https://github.com/apache/jena/blob/c78176284b89c00fff929cd18e15e2b704991887/jena-arq/src/main/java/org/apache/jena/riot/system/RiotLib.java#L289
+	   public static Triple getOneTriple(final DatasetGraph dsg, final Node s, final Node p, final Node o) {
+	        Iterator<Quad> iter = dsg.find(Node.ANY, s, p, o);
+            if ( !iter.hasNext() )
+                return null;
+            Quad q = iter.next();
+            if ( iter.hasNext() )
+                return null;
+            return q.asTriple();
+	    }
+	
 	public Integer compare(final Node t1, final Node t2, boolean doRecurse) {
 		// sort by property
 		Integer res = CompareLiterals.compareUri(t1, t2);
 		if (res != null) return res;
 		// iterate over the different properties registered by the user
-		for (String propUri : this.propUris) {
-			final Triple t1t = RiotLib.triple1(g, t1, NodeFactory.createURI(propUri), Node.ANY) ;
-			final Triple t2t = RiotLib.triple1(g, t2, NodeFactory.createURI(propUri), Node.ANY) ;
+		for (final String propUri : this.propUris) {
+			final Triple t1t = getOneTriple(g, t1, NodeFactory.createURI(propUri), Node.ANY) ;
+			final Triple t2t = getOneTriple(g, t2, NodeFactory.createURI(propUri), Node.ANY) ;
 			if (t1t == null) {
 				if (t2t == null)
 					// if neither of the nodes have the property, we just compare with the next property

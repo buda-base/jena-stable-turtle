@@ -244,5 +244,32 @@ public class TestSttl {
         res = baos.toString().trim();
         assertTrue(res.equals(content));
 	}
+
+    @Test
+    public void testApi() throws IOException {
+        Model m = ModelFactory.createDefaultModel();
+        Lang sttl = STTLWriter.registerWriter();
+        SortedMap<String, Integer> nsPrio = ComparePredicates.getDefaultNSPriorities();
+        nsPrio.put(SKOS.getURI(), 1);
+        nsPrio.put("http://purl.bdrc.io/ontology/admin/", 5);
+        nsPrio.put("http://purl.bdrc.io/ontology/toberemoved/", 6);
+        List<String> predicatesPrio = CompareComplex.getDefaultPropUris();
+        predicatesPrio.add("http://purl.bdrc.io/ontology/admin/logWhen");
+        predicatesPrio.add("http://purl.bdrc.io/ontology/onOrAbout");
+        predicatesPrio.add("http://purl.bdrc.io/ontology/noteText");
+        Context ctx = new Context();
+        ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "nsPriorities"), nsPrio);
+        ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "nsDefaultPriority"), 2);
+        ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "complexPredicatesPriorities"), predicatesPrio);
+        ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "indentBase"), 3);
+        ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "predicateBaseWidth"), 12);
+        // G844
+        m.read("src/test/resources/G844.ttl", "TURTLE");
+        RDFWriter w = RDFWriter.create().source(m.getGraph()).context(ctx).lang(sttl).build();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        w.output(baos);
+        String res = baos.toString().trim();
+        
+    }
 	
 }

@@ -246,9 +246,9 @@ public class TurtleShell {
         /** Get exactly one triple or null for none or more than one. */
         private Triple triple1(Node s, Node p, Node o) {
             if (dsg != null)
-                return RiotLib.triple1(dsg, s, p, o);
+                return CompareComplex.getOneTriple(dsg, s, p, o);
             else
-                return RiotLib.triple1(graph, s, p, o);
+                return CompareComplex.getOneTriple(graph, s, p, o);
         }
 
         private long countTriples(Node s, Node p, Node o) {
@@ -740,7 +740,7 @@ public class TurtleShell {
             }
             int colPredicateStart = out.getAbsoluteIndent();
 
-            if (!prefixMap.contains(rdfNS) && RDF_type.equals(p))
+            if (!prefixMap.containsPrefix(rdfNS) && RDF_type.equals(p))
                 print("a");
             else
                 writeNode(p);
