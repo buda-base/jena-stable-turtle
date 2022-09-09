@@ -116,7 +116,7 @@ public class TurtleShell {
     }
 
     protected void writeBase(String base) {
-        RiotLib.writeBase(out, base, true);
+        RiotLib.writeBase(out, base, false);
     }
 
     protected void writePrefixes(PrefixMap prefixMap) {
