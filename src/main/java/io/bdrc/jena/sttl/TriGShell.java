@@ -19,6 +19,7 @@
 
 package io.bdrc.jena.sttl;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -47,21 +48,47 @@ class TriGShell extends TurtleShell
 
     void write(final DatasetGraph dsg) {
         writeBase(baseURI) ;
-        writePrefixes(prefixMap) ;
-        if ( !prefixMap.isEmpty() && !dsg.isEmpty() )
-            out.println() ;
-
-        final Iterator<Node> graphNamesI = dsg.listGraphNodes() ;
-        final List<Node> graphNames = new ArrayList<>();
-        graphNamesI.forEachRemaining(graphNames::add);
-        Collections.sort(graphNames, compLiterals);
-
-        boolean anyGraphOutput = writeGraphTriG(dsg, null) ;
-
-        for ( final Node gn : graphNames ) {
-            if ( anyGraphOutput )
+        if (this.onlyWriteUsedPrefixes) {
+            final IndentedWriter savedOut = this.out;
+            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            final IndentedWriter buffedOut = new IndentedWriter(baos);
+            // buffedOut is always at indentation 0 at this point
+            this.out = buffedOut;
+            final Iterator<Node> graphNamesI = dsg.listGraphNodes() ;
+            final List<Node> graphNames = new ArrayList<>();
+            graphNamesI.forEachRemaining(graphNames::add);
+            Collections.sort(graphNames, compLiterals);
+    
+            boolean anyGraphOutput = writeGraphTriG(dsg, null) ;
+    
+            for ( final Node gn : graphNames ) {
+                if ( anyGraphOutput )
+                    out.println() ;
+                anyGraphOutput |= writeGraphTriG(dsg, gn) ;
+            }
+            this.out = savedOut;
+            int nbPrefixesWritten = writePrefixes(prefixMap) ;
+            if ( nbPrefixesWritten > 0 && !dsg.isEmpty() )
                 out.println() ;
-            anyGraphOutput |= writeGraphTriG(dsg, gn) ;
+            buffedOut.flush();
+            this.out.print(baos.toString());
+        } else {
+            int nbPrefixesWritten = writePrefixes(prefixMap) ;
+            if ( nbPrefixesWritten > 0 && !dsg.isEmpty() )
+                out.println() ;
+    
+            final Iterator<Node> graphNamesI = dsg.listGraphNodes() ;
+            final List<Node> graphNames = new ArrayList<>();
+            graphNamesI.forEachRemaining(graphNames::add);
+            Collections.sort(graphNames, compLiterals);
+    
+            boolean anyGraphOutput = writeGraphTriG(dsg, null) ;
+    
+            for ( final Node gn : graphNames ) {
+                if ( anyGraphOutput )
+                    out.println() ;
+                anyGraphOutput |= writeGraphTriG(dsg, gn) ;
+            }
         }
     }
 

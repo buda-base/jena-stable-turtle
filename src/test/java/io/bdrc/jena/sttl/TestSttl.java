@@ -288,5 +288,14 @@ public class TestSttl {
         w.output(baos);
         String res = baos.toString();
         // System.out.println(res);
+        DatasetGraph dsg = DatasetFactory.createGeneral().asDatasetGraph();
+        String content = new String(Files.readAllBytes(Paths.get("src/test/resources/multigraphs.trig"))).trim();
+        RDFDataMgr.read(dsg, new StringReader(content), null, Lang.TRIG);
+        Lang strig = STriGWriter.registerWriter();
+        w = RDFWriter.create().source(dsg).context(ctx).lang(strig).build();
+        baos = new ByteArrayOutputStream();
+        w.output(baos);
+        res = baos.toString();
+        //System.out.println(res);
     }
 }
