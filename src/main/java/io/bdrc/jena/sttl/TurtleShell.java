@@ -31,6 +31,7 @@ import static org.apache.jena.riot.writer.WriterConst.RDF_Rest;
 import static org.apache.jena.riot.writer.WriterConst.RDF_type;
 import static org.apache.jena.riot.writer.WriterConst.rdfNS;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -72,10 +73,11 @@ import org.apache.jena.util.iterator.ExtendedIterator;
  * TriG)
  */
 public class TurtleShell {
-    protected final IndentedWriter out;
+    protected IndentedWriter out;
     protected final NodeFormatter nodeFmt;
     protected final PrefixMap prefixMap;
     protected final String baseURI;
+    protected final Boolean onlyWriteUsedPrefixes;
 
     protected int indent_base = 4;
     protected int predicate_base_width = 14;
@@ -84,10 +86,14 @@ public class TurtleShell {
     protected static final Comparator<Node> compLiterals = new CompareLiterals();
     private List<String> complexPredicatesPriorities = null;
 
-    protected TurtleShell(IndentedWriter out, PrefixMap pmap, String baseURI, Context context) {
+    protected TurtleShell(final IndentedWriter out, PrefixMap pmap, final String baseURI, final Context context) {
         this.out = out;
         if (pmap == null)
             pmap = PrefixMapFactory.emptyPrefixMap();
+        this.onlyWriteUsedPrefixes = context.get(Symbol.create(STTLWriter.SYMBOLS_NS + "onlyWriteUsedPrefixes"), false);
+        if (this.onlyWriteUsedPrefixes) {
+            pmap = new CheckedPrefixMap(pmap);
+        }
         this.prefixMap = pmap;
         this.baseURI = baseURI;
         if (context != null && context.isTrue(RIOT.multilineLiterals))
@@ -115,15 +121,20 @@ public class TurtleShell {
         this.predicate_base_width = context.getInt(s, 14);
     }
 
-    protected void writeBase(String base) {
+    protected void writeBase(final String base) {
         RiotLib.writeBase(out, base, false);
     }
 
-    protected void writePrefixes(PrefixMap prefixMap) {
+    // returns the number of prefixes written
+    protected int writePrefixes(final PrefixMap prefixMap) {
         // had to rewrite that to order it properly:
         if (prefixMap == null || prefixMap.isEmpty())
-            return;
-        final Map<String, String> map = prefixMap.getMappingCopy();
+            return 0;
+        final Map<String, String> map;
+        if (this.onlyWriteUsedPrefixes && prefixMap instanceof CheckedPrefixMap) 
+            map = ((CheckedPrefixMap) prefixMap).getUsedMappingCopy();
+        else
+            map = prefixMap.getMappingCopy();
         final List<String> sortedKeys = new ArrayList<String>(map.keySet());
         Collections.sort(sortedKeys);
         for (String prefix : sortedKeys) {
@@ -137,6 +148,7 @@ public class TurtleShell {
             out.print(" .");
             out.println();
         }
+        return sortedKeys.size();
     }
 
     /* Write graph in Turtle syntax (or part of TriG) */
@@ -158,10 +170,25 @@ public class TurtleShell {
     // write comes from TurtleWriter.java
     public void write(Graph graph) {
         writeBase(baseURI);
-        writePrefixes(prefixMap);
-        if (!prefixMap.isEmpty() && !graph.isEmpty())
-            out.println();
-        writeGraphTTL(graph);
+        if (this.onlyWriteUsedPrefixes) {
+            final IndentedWriter savedOut = this.out;
+            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            final IndentedWriter buffedOut = new IndentedWriter(baos);
+            // buffedOut is always at indentation 0 at this point
+            this.out = buffedOut;
+            writeGraphTTL(graph);
+            this.out = savedOut;
+            int nbPrefixesWritten = writePrefixes(this.prefixMap);
+            if (nbPrefixesWritten > 0 && !graph.isEmpty())
+                out.println();
+            buffedOut.flush();
+            this.out.print(baos.toString());
+        } else {
+            int nbPrefixesWritten = writePrefixes(this.prefixMap);
+            if (nbPrefixesWritten > 0 && !graph.isEmpty())
+                out.println();
+            writeGraphTTL(graph);
+        }
     }
 
     // Write one graph - using an inner object class to isolate

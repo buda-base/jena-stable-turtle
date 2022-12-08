@@ -216,6 +216,7 @@ public class TestSttl {
 		ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "complexPredicatesPriorities"), predicatesPrio);
 		ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "indentBase"), 3);
 		ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "predicateBaseWidth"), 12);
+		//ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "onlyWriteUsedPrefixes"), true);
 		// G844
 		String content = new String(Files.readAllBytes(Paths.get("src/test/resources/G844.ttl"))).trim();
 		m.read("src/test/resources/G844.ttl", "TURTLE");
@@ -223,6 +224,7 @@ public class TestSttl {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		w.output(baos);
 		String res = baos.toString().trim();
+		System.out.println(res);
 		assertTrue(res.equals(content));
 		// outline
 		content = new String(Files.readAllBytes(Paths.get("src/test/resources/outline.ttl"))).trim();
@@ -269,7 +271,22 @@ public class TestSttl {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         w.output(baos);
         String res = baos.toString().trim();
-        
     }
 	
+    @Test
+    public void testPrefixMap() throws IOException {
+        Model m = ModelFactory.createDefaultModel();
+        Lang sttl = STTLWriter.registerWriter();
+        Context ctx = new Context();
+        ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "indentBase"), 3);
+        ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "onlyWriteUsedPrefixes"), true);
+        ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "predicateBaseWidth"), 12);
+        // G844
+        m.read("src/test/resources/G844.ttl", "TURTLE");
+        RDFWriter w = RDFWriter.create().source(m.getGraph()).context(ctx).lang(sttl).build();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        w.output(baos);
+        String res = baos.toString();
+        // System.out.println(res);
+    }
 }
