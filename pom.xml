@@ -4,7 +4,7 @@
   <groupId>io.bdrc</groupId>
   <artifactId>jena-stable-turtle</artifactId>
   <packaging>jar</packaging>
-  <version>0.7.4</version>
+  <version>0.8.0</version>
   <name>jena-stable-turtle</name>
   <description>Stable turtle / trig output plugin for apache Jena</description>
   <url>http://github.com/buda-base/jena-stable-turtle</url>
@@ -38,8 +38,8 @@
     <url>http://github.com/buda-base/jena-stable-turtle/tree/master</url>
   </scm>
   <properties>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <dependencies>
