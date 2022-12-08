@@ -64,6 +64,8 @@ w.output( ... ); // write somewhere
 
 Note that for TriG order, you must use the same context namespace as for turtle: `STTLWriter.SYMBOLS_NS`.
 
+Set the symbol `STTLWriter.SYMBOLS_NS + "onlyWriteUsedPrefixes"` to `true` to only write prefixes that are actually used.
+
 
 ## License
 
