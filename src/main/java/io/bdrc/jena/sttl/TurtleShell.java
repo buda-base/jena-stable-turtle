@@ -81,6 +81,9 @@ public class TurtleShell {
 
     protected int indent_base = 4;
     protected int predicate_base_width = 14;
+    protected int long_subject = LONG_SUBJECT;
+    protected boolean objects_multi_line = false;
+    protected boolean named_dot_new_line = false;
 
     private Comparator<Node> compPredicates;
     protected static final Comparator<Node> compLiterals = new CompareLiterals();
@@ -119,6 +122,12 @@ public class TurtleShell {
         this.indent_base = context.getInt(s, 4);
         s = Symbol.create(STTLWriter.SYMBOLS_NS + "predicateBaseWidth");
         this.predicate_base_width = context.getInt(s, 14);
+        s = Symbol.create(STTLWriter.SYMBOLS_NS + "longSubject");
+        this.long_subject = context.getInt(s, LONG_SUBJECT);
+        s = Symbol.create(STTLWriter.SYMBOLS_NS + "objectsMultiLine");
+        this.objects_multi_line = context.isTrue(s);
+        s = Symbol.create(STTLWriter.SYMBOLS_NS + "namedDotNewLine");
+        this.named_dot_new_line = context.isTrue(s);
     }
 
     protected void writeBase(final String base) {
@@ -657,12 +666,17 @@ public class TurtleShell {
         // Write the PredicateObjectList fora subject already output.
         // The subject may have been a "[]" or a URI - the indentation is passed in.
         private void writeClusterPredicateObjectList(int indent, Collection<Triple> cluster) {
+            int lastRow = out.getRow();
             write_S_P_Gap();
             out.incIndent(indent);
             out.pad();
             writePredicateObjectList(cluster);
             out.decIndent(indent);
-            print(" .");
+            if (out.getRow() > lastRow && named_dot_new_line) {
+                println();
+                print(".");
+            } else
+                print(" .");
             println();
         }
 
@@ -723,18 +737,21 @@ public class TurtleShell {
         }
 
         private void writePredicateObject(Node p, Node obj, int predicateMaxWidth, boolean first) {
-            writePredicate(p, predicateMaxWidth, first);
+            writePredicate(p, predicateMaxWidth, first, false);
             out.incIndent(indent_base);
             writeNodePretty(obj);
             out.decIndent(indent_base);
         }
 
         private void writePredicateObjectList(Node p, List<Node> objects, int predicateMaxWidth, boolean first, boolean complex) {
-            writePredicate(p, predicateMaxWidth, first);
+            boolean useMultiLine = objects_multi_line && objects.size() > 1;
+            writePredicate(p, predicateMaxWidth, first, useMultiLine);
             out.incIndent(indent_base);
 
             boolean firstObject = true;
             for (Node o : objects) {
+                if (firstObject && useMultiLine)
+                    out.pad(indent_base);
                 if (!firstObject) {
                     if (out.getCurrentOffset() > 0)
                         out.print(" ,");
@@ -742,7 +759,7 @@ public class TurtleShell {
                         // Before the current indent, due to a multiline literal being written raw.
                         // We will pad spaces to indent on output spaces. Don't add a first " "
                         out.print(",");
-                    if (complex) {
+                    if (useMultiLine || complex) {
                         println();
                         out.pad(indent_base);
                     } else
@@ -758,7 +775,7 @@ public class TurtleShell {
         }
 
         /** Write a predicate - jump to next line if deemed long */
-        private void writePredicate(Node p, int predicateMaxWidth, boolean first) {
+        private void writePredicate(Node p, int predicateMaxWidth, boolean first, boolean objectNewLine) {
             if (first)
                 first = false;
             else {
@@ -774,7 +791,7 @@ public class TurtleShell {
             int colPredicateFinish = out.getCol();
             int wPredicate = (colPredicateFinish - colPredicateStart);
 
-            if (wPredicate > LONG_PREDICATE)
+            if (objectNewLine || wPredicate > LONG_PREDICATE)
                 println();
             else {
                 out.pad(predicateMaxWidth);
@@ -935,7 +952,7 @@ public class TurtleShell {
         }
 
         private void write_S_P_Gap() {
-            if (out.getCol() > LONG_SUBJECT)
+            if (out.getCol() > long_subject)
                 out.println();
             else
                 gap(GAP_S_P);
