@@ -34,6 +34,8 @@ Then go to https://oss.sonatype.org/ and do the close and release
 
 ## Use
 
+#### From Java
+
 ```java
 // register the STTL writer
 Lang sttl = STTLWriter.registerWriter();
@@ -64,6 +66,14 @@ w.output( ... ); // write somewhere
 Note that for TriG order, you must use the same context namespace as for turtle: `STTLWriter.SYMBOLS_NS`.
 
 Set the symbol `STTLWriter.SYMBOLS_NS + "onlyWriteUsedPrefixes"` to `true` to only write prefixes that are actually used.
+
+#### Command line
+
+Put the compiled `.jar` file into the jena class path and then call
+
+```sh
+riot --pretty sttl yourfile.ttl
+```
 
 
 ## License
