@@ -58,6 +58,12 @@ ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "complexPredicatesPriorities"), pr
 ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "nsBaseIndent"), 4);
 // the minimal predicate width, defaults to 14
 ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "predicateBaseWidth"), 14);
+// longest length for subject to be on the same line with the predicate, defaults to 20
+ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "longSubject"), 20);
+// put multiple objects on separate lines each, defaults to false
+ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "objectsMultiLine"), false);
+// put final dot on new line for named subjects, defaults to false
+ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "namedDotNewLine"), false);
 Graph g = ... ; // fetch the graph you want to write
 RDFWriter w = RDFWriter.create().source().context(ctx).lang(sttl).build();
 w.output( ... ); // write somewhere
