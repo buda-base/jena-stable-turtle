@@ -59,7 +59,6 @@ ctx.set(Symbol.create(STTLWriter.SYMBOLS_NS + "predicateBaseWidth"), 14);
 Graph g = ... ; // fetch the graph you want to write
 RDFWriter w = RDFWriter.create().source().context(ctx).lang(sttl).build();
 w.output( ... ); // write somewhere
-
 ```
 
 Note that for TriG order, you must use the same context namespace as for turtle: `STTLWriter.SYMBOLS_NS`.
