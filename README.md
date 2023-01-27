@@ -1,6 +1,6 @@
 # Jena Stable Turtle output plugin 
 
-This repository contains code to define new [RDF Writers](https://jena.apache.org/documentation/io/rdf-output.html) for [Jena](https://jena.apache.org/) which is turtle always sorted in the same way. It has been developped to reduce the diff noise when the data is stored on a git repository, we are confident there are plenty of other use cases where it will be useful.
+This repository contains code to define new [RDF Writers](https://jena.apache.org/documentation/io/rdf-output.html) for [Jena](https://jena.apache.org/) which is turtle always sorted in the same way. It has been developed to reduce the diff noise when the data is stored on a git repository, we are confident there are plenty of other use cases where it will be useful.
 
 The repository contains two writers, for the Turtle and TriG formats.
 
