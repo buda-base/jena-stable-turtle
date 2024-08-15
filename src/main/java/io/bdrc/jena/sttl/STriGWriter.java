@@ -1,11 +1,7 @@
 package io.bdrc.jena.sttl;
 
 import org.apache.jena.atlas.io.IndentedWriter;
-import org.apache.jena.riot.Lang;
-import org.apache.jena.riot.LangBuilder;
-import org.apache.jena.riot.RDFFormat;
-import org.apache.jena.riot.RDFLanguages;
-import org.apache.jena.riot.RDFWriterRegistry;
+import org.apache.jena.riot.*;
 import org.apache.jena.riot.system.PrefixMap;
 import org.apache.jena.riot.writer.TriGWriterBase;
 import org.apache.jena.sparql.core.DatasetGraph;
@@ -53,7 +49,7 @@ public class STriGWriter extends TriGWriterBase {
     public static Lang registerWriter(String langName, String contentType) {
         if (lang != null) return lang;
         lang = LangBuilder.create(langName, contentType).build();
-        RDFLanguages.register(lang);
+        RDFParserRegistry.registerLangQuads(lang, RDFParserRegistry.getFactory(Lang.TRIG));
         RDFFormat format = new RDFFormat(lang);
         RDFWriterRegistry.register(lang, format);
         RDFWriterRegistry.register(format, new STriGWriterFactory());
