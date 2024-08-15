@@ -62,6 +62,7 @@ import org.apache.jena.riot.out.NodeToLabel;
 import org.apache.jena.riot.system.PrefixMap;
 import org.apache.jena.riot.system.PrefixMapFactory;
 import org.apache.jena.riot.system.RiotLib;
+import org.apache.jena.riot.writer.DirectiveStyle;
 import org.apache.jena.sparql.core.DatasetGraph;
 import org.apache.jena.sparql.core.Quad;
 import org.apache.jena.sparql.util.Context;
@@ -122,7 +123,7 @@ public class TurtleShell {
     }
 
     protected void writeBase(final String base) {
-        RiotLib.writeBase(out, base, false);
+        RiotLib.writeBase(out, base, DirectiveStyle.KEYWORD);
     }
 
     // returns the number of prefixes written
